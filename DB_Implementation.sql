@@ -59,7 +59,8 @@ CREATE TABLE Habitats_Continents(
 idHabitat INT NOT NULL,
 idContinent INT NOT NULL,
 PRIMARY KEY (idHabitat, idContinent),
-FOREIGN KEY (idHabitat) REFERENCES Habitats(idHabitat),
+FOREIGN KEY (idHabitat) REFERENCES Habitats(idHabitat)
+ON UPDATE CASCADE ON DELETE CASCADE,
 FOREIGN KEY (idContinent) REFERENCES Continents(idContinent)
 ON UPDATE CASCADE ON DELETE CASCADE
 );
@@ -85,4 +86,44 @@ FOREIGN KEY(idSpecie) REFERENCES Species(idSpecie)
 ON UPDATE CASCADE ON DELETE CASCADE,
 FOREIGN KEY(idZone) REFERENCES Zones(idZone)
 ON UPDATE CASCADE ON DELETE CASCADE
-),
+);
+
+-- Table Itineraries
+DROP TABLE IF EXISTS Itineraries;
+CREATE TABLE Itineraries(
+idItinerary INT NOT NULL AUTO_INCREMENT,
+Duration DECIMAL(1),
+StartHour TIME,
+EndHour TIME,
+Length DECIMAL(1),
+MaxPeople INT,
+NoSpecies INT,
+PRIMARY KEY(idItinerary)
+);
+
+-- Table Zones_Itineraries
+DROP TABLE IF EXISTS Zones_Itineraries;
+CREATE TABLE Zones_Itineraries(
+idItinerary INT NOT NULL,
+idZone INT NOT NULL,
+Dates DATE,
+PRIMARY KEY(idItinerary, idZone),
+FOREIGN KEY(idItinerary) REFERENCES Itineraries(idItinerary)
+ON UPDATE CASCADE ON DELETE CASCADE,
+FOREIGN KEY(idZone) REFERENCES Zones(idZone)
+ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+-- Table Influx
+DROP TABLE IF EXISTS Influx;
+CREATE TABLE Influx(
+Dates DATE,
+Visitors INT,
+Revenue DECIMAL(2),
+idItinerary INT NOT NULL,
+PRIMARY KEY(Dates, idItinerary),
+FOREIGN KEY(idItinerary) REFERENCES Itineraries(idItinerary)
+ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+
