@@ -117,7 +117,7 @@ ON UPDATE CASCADE ON DELETE CASCADE
 -- Table Influx
 DROP TABLE IF EXISTS Influx;
 CREATE TABLE Influx(
-Dates DATE,
+Dates DATE NOT NULL,
 Visitors INT,
 Revenue DECIMAL(2),
 idItinerary INT NOT NULL,
@@ -126,4 +126,30 @@ FOREIGN KEY(idItinerary) REFERENCES Itineraries(idItinerary)
 ON UPDATE CASCADE ON DELETE CASCADE
 );
 
+-- Table Employees
+DROP TABLE IF EXISTS Employees;
+CREATE TABLE Employees(
+idEmployee INT NOT NULL AUTO_INCREMENT,
+Name VARCHAR(45),
+Address VARCHAR(90),
+Phone VARCHAR(45),
+HiringDate DATE,
+Manager VARCHAR(45),
+Role VARCHAR(45),
+PRIMARY KEY(idEmployee)
+);
+
+-- Table Salaries
+DROP TABLE IF EXISTS Salaries;
+CREATE TABLE Employees(
+Dates DATE NOT NULL,
+BaseSalary DECIMAL(2),
+ExtraSalary DECIMAL(2),
+ManagerExtra DECIMAL(2),
+TotalSalary DECIMAL(2),
+idEmployee INT NOT NULL,
+PRIMARY KEY(Dates, idEmployee),
+FOREIGN KEY(idEmployee) REFERENCES Employees(idEmployee)
+ON UPDATE CASCADE ON DELETE CASCADE
+);
 
