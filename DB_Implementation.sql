@@ -16,18 +16,18 @@ USE ZooDB;
 -- Table Species
 DROP TABLE IF EXISTS Species;
 CREATE TABLE Species(
-idSpecie INT NOT NULL AUTO_INCREMENT,
+idSpecies INT NOT NULL AUTO_INCREMENT,
 CommonName VARCHAR(45),
 ScientificName VARCHAR(45),
 GeneralDescription VARCHAR(100),
-PRIMARY KEY (idSpecie)
+PRIMARY KEY (idSpecies)
 );
 
 -- Table Habitats
 DROP TABLE IF EXISTS Habitats;
 CREATE TABLE Habitats(
 idHabitat INT NOT NULL AUTO_INCREMENT,
-Name VARCHAR(45),
+Habitat_Name VARCHAR(45),
 Climate VARCHAR(45),
 Vegetation VARCHAR(45),
 PRIMARY KEY (idHabitat)
@@ -37,17 +37,17 @@ PRIMARY KEY (idHabitat)
 DROP TABLE IF EXISTS Continents;
 CREATE TABLE Continents(
 idContinent INT NOT NULL AUTO_INCREMENT,
-Name VARCHAR(45),
+Continent_Name VARCHAR(45),
 PRIMARY KEY (idContinents)
 );
 
 -- Table Species_Habitats
 DROP TABLE IF EXISTS Species_Habitats;
 CREATE TABLE Species_Habitats(
-idSpecie INT NOT NULL,
+idSpecies INT NOT NULL,
 idHabitat INT NOT NULL,
-PRIMARY KEY (idSpecie, idHabitat),
-FOREIGN KEY (idSpecie) REFERENCES Species(idSpecie)
+PRIMARY KEY (idSpecies, idHabitat),
+FOREIGN KEY (idSpecies) REFERENCES Species(idSpecies)
 ON UPDATE CASCADE ON DELETE CASCADE,
 FOREIGN KEY (idHabitat) REFERENCES Habitats(idHabitat)
 ON UPDATE CASCADE ON DELETE CASCADE
@@ -69,7 +69,7 @@ ON UPDATE CASCADE ON DELETE CASCADE
 DROP TABLE IF EXISTS Zones;
 CREATE TABLE Zones(
 idZone INT NOT NULL AUTO_INCREMENT,
-Name VARCHAR(45),
+Zone_Name VARCHAR(45),
 Size DECIMAL(2),
 PRIMARY KEY(idZone)
 );
@@ -79,10 +79,10 @@ DROP TABLE IF EXISTS Cages;
 CREATE TABLE Cages(
 idCage INT NOT NULL AUTO_INCREMENT,
 Occupants INT,
-idSpecie INT NOT NULL,
+idSpecies INT NOT NULL,
 idZone INT NOT NULL,
 PRIMARY KEY(idCage),
-FOREIGN KEY(idSpecie) REFERENCES Species(idSpecie)
+FOREIGN KEY(idSpecies) REFERENCES Species(idSpecies)
 ON UPDATE CASCADE ON DELETE RESTRICT,
 FOREIGN KEY(idZone) REFERENCES Zones(idZone)
 ON UPDATE CASCADE ON DELETE RESTRICT
@@ -95,7 +95,7 @@ idItinerary INT NOT NULL AUTO_INCREMENT,
 Duration DECIMAL(1),
 StartHour TIME,
 EndHour TIME,
-Length DECIMAL(1),
+Itinerary_Length DECIMAL(1),
 MaxPeople INT,
 NoSpecies INT,
 PRIMARY KEY(idItinerary)
@@ -130,7 +130,7 @@ ON UPDATE CASCADE ON DELETE RESTRICT
 DROP TABLE IF EXISTS Employees;
 CREATE TABLE Employees(
 idEmployee INT NOT NULL AUTO_INCREMENT,
-Name VARCHAR(45),
+Employee_Name VARCHAR(45),
 Address VARCHAR(90),
 Phone VARCHAR(45),
 HiringDate DATE,
@@ -141,8 +141,8 @@ PRIMARY KEY(idEmployee)
 
 -- Table Salaries
 DROP TABLE IF EXISTS Salaries;
-CREATE TABLE Employees(
-Dates DATE NOT NULL,
+CREATE TABLE Salaries(
+Salary_Date DATE NOT NULL,
 BaseSalary DECIMAL(2),
 ExtraSalary DECIMAL(2),
 ManagerExtra DECIMAL(2),
@@ -158,7 +158,7 @@ DROP TABLE IF EXISTS Guides;
 CREATE TABLE Guides(
 idEmployee INT NOT NULL,
 idItinerary INT NOT NULL,
-Dates DATE,
+Guide_Date DATE,
 Hours TIME,
 PRIMARY KEY(idEmployee, idItinerary),
 FOREIGN KEY(idEmployee) REFERENCES Employees(idEmployee)
@@ -171,11 +171,28 @@ ON UPDATE CASCADE ON DELETE RESTRICT
 DROP TABLE IF EXISTS Caretakers;
 CREATE TABLE Caretakers(
 idEmployee INT NOT NULL,
-idSpecie INT NOT NULL,
-Dates DATE,
-PRIMARY KEY(idEmployee, idSpecie),
+idSpecies INT NOT NULL,
+Caretaker_Date DATE,
+PRIMARY KEY(idEmployee, idSpecies),
 FOREIGN KEY(idEmployee) REFERENCES Employees(idEmployee)
 ON UPDATE CASCADE ON DELETE RESTRICT,
-FOREIGN KEY(idSpecie) REFERENCES Species(idSpecie)
+FOREIGN KEY(idSpecies) REFERENCES Species(idSpecies)
 ON UPDATE CASCADE ON DELETE RESTRICT
 );
+
+-- Stored Procedure to Add Species
+DROP PROCEDURE IF EXISTS AddSpecies;
+DELIMITER //
+CREATE PROCEDURE AddSpecies_sp(
+IN valCommonName VARCHAR(45),
+IN valScientificName VARCHAR(45),
+IN valGeneralDescription VARCHAR(100)
+)
+BEGIN
+INSERT INTO Species(CommonName, ScientificName, GeneralDescription)
+VALUES (valCommonName, valScientificName, valGeneralDescription);
+END
+//
+DELIMITER ;
+
+CALL AddSpecies();
