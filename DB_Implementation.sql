@@ -6,214 +6,220 @@ Daniel Eduardo López
 
 */
 -- Database creation
-DROP SCHEMA IF EXISTS ZooDB;
-CREATE SCHEMA ZooDB;
+DROP SCHEMA IF EXISTS zoo;
+CREATE SCHEMA zoo;
 
 -- Use of the database
-USE ZooDB;
+USE zoo;
 
 -- TABLES
 -- Table Species
-DROP TABLE IF EXISTS Species;
-CREATE TABLE Species(
-idSpecies INT NOT NULL AUTO_INCREMENT,
-CommonName VARCHAR(45),
-ScientificName VARCHAR(45),
-GeneralDescription VARCHAR(100),
-PRIMARY KEY (idSpecies)
+DROP TABLE IF EXISTS species;
+CREATE TABLE species(
+species_id INT NOT NULL AUTO_INCREMENT,
+common_name VARCHAR(45),
+scientific_name VARCHAR(45),
+general_description VARCHAR(100),
+PRIMARY KEY (species_id)
 );
 
--- Table Habitats
-DROP TABLE IF EXISTS Habitats;
-CREATE TABLE Habitats(
-idHabitat INT NOT NULL AUTO_INCREMENT,
-Habitat_Name VARCHAR(45),
-Climate VARCHAR(45),
-Vegetation VARCHAR(45),
-PRIMARY KEY (idHabitat)
+-- Table Habitat
+DROP TABLE IF EXISTS habitat;
+CREATE TABLE habitat(
+habitat_id INT NOT NULL AUTO_INCREMENT,
+habitat_name VARCHAR(45),
+climate VARCHAR(45),
+vegetation VARCHAR(45),
+PRIMARY KEY (habitat_id)
 );
 
 -- Table Continents
-DROP TABLE IF EXISTS Continents;
-CREATE TABLE Continents(
-idContinent INT NOT NULL AUTO_INCREMENT,
-Continent_Name VARCHAR(45),
-PRIMARY KEY (idContinents)
+DROP TABLE IF EXISTS continent;
+CREATE TABLE continent(
+continent_id INT NOT NULL AUTO_INCREMENT,
+continent_name VARCHAR(45),
+PRIMARY KEY (continent_id)
 );
 
 -- Table Species_Habitats
-DROP TABLE IF EXISTS Species_Habitats;
-CREATE TABLE Species_Habitats(
-idSpecies INT NOT NULL,
-idHabitat INT NOT NULL,
-PRIMARY KEY (idSpecies, idHabitat),
-FOREIGN KEY (idSpecies) REFERENCES Species(idSpecies)
+DROP TABLE IF EXISTS species_habitat;
+CREATE TABLE species_habitat(
+species_id INT NOT NULL,
+habitat_id INT NOT NULL,
+PRIMARY KEY (species_id, habitat_id),
+FOREIGN KEY (species_id) REFERENCES species(species_id)
 ON UPDATE CASCADE ON DELETE CASCADE,
-FOREIGN KEY (idHabitat) REFERENCES Habitats(idHabitat)
+FOREIGN KEY (habitat_id) REFERENCES habitat(habitat_id)
 ON UPDATE CASCADE ON DELETE CASCADE
 );
 
 -- Table Habitats_Continents
-DROP TABLE IF EXISTS Habitats_Continents;
-CREATE TABLE Habitats_Continents(
-idHabitat INT NOT NULL,
-idContinent INT NOT NULL,
-PRIMARY KEY (idHabitat, idContinent),
-FOREIGN KEY (idHabitat) REFERENCES Habitats(idHabitat)
+DROP TABLE IF EXISTS habitat_continent;
+CREATE TABLE habitat_continent(
+habitat_id INT NOT NULL,
+continent_id INT NOT NULL,
+PRIMARY KEY (habitat_id, continent_id),
+FOREIGN KEY (habitat_id) REFERENCES habitat(habitat_id)
 ON UPDATE CASCADE ON DELETE CASCADE,
-FOREIGN KEY (idContinent) REFERENCES Continents(idContinent)
+FOREIGN KEY (continent_id) REFERENCES continent(continent_id)
 ON UPDATE CASCADE ON DELETE CASCADE
 );
 
 -- Table Zones
-DROP TABLE IF EXISTS Zones;
-CREATE TABLE Zones(
-idZone INT NOT NULL AUTO_INCREMENT,
-Zone_Name VARCHAR(45),
-Size DECIMAL(2),
-PRIMARY KEY(idZone)
+DROP TABLE IF EXISTS zone;
+CREATE TABLE zone(
+zone_id INT NOT NULL AUTO_INCREMENT,
+zone_name VARCHAR(45),
+size DECIMAL(2),
+PRIMARY KEY(zone_id)
 );
 
 -- Table Cages
-DROP TABLE IF EXISTS Cages;
-CREATE TABLE Cages(
-idCage INT NOT NULL AUTO_INCREMENT,
-Occupants INT,
-idSpecies INT NOT NULL,
-idZone INT NOT NULL,
-PRIMARY KEY(idCage),
-FOREIGN KEY(idSpecies) REFERENCES Species(idSpecies)
+DROP TABLE IF EXISTS cage;
+CREATE TABLE cage(
+cage_id INT NOT NULL AUTO_INCREMENT,
+occupants INT,
+species_id INT NOT NULL,
+zone_id INT NOT NULL,
+PRIMARY KEY(cage_id),
+FOREIGN KEY(species_id) REFERENCES species(species_id)
 ON UPDATE CASCADE ON DELETE RESTRICT,
-FOREIGN KEY(idZone) REFERENCES Zones(idZone)
+FOREIGN KEY(zone_id) REFERENCES zones(zone_id)
 ON UPDATE CASCADE ON DELETE RESTRICT
 );
 
 -- Table Itineraries
-DROP TABLE IF EXISTS Itineraries;
-CREATE TABLE Itineraries(
-idItinerary INT NOT NULL AUTO_INCREMENT,
-Duration DECIMAL(1),
-StartHour TIME,
-EndHour TIME,
-Itinerary_Length DECIMAL(1),
-MaxPeople INT,
-NoSpecies INT,
-PRIMARY KEY(idItinerary)
+DROP TABLE IF EXISTS itinerary;
+CREATE TABLE itinerary(
+itinerary_id INT NOT NULL AUTO_INCREMENT,
+duration DECIMAL(1),
+start_hour TIME,
+end_hour TIME,
+itinerary_length DECIMAL(1),
+max_people INT,
+no_species INT,
+PRIMARY KEY(itinerary_id)
 );
 
 -- Table Zones_Itineraries
-DROP TABLE IF EXISTS Zones_Itineraries;
-CREATE TABLE Zones_Itineraries(
-idItinerary INT NOT NULL,
-idZone INT NOT NULL,
-Dates DATE,
-PRIMARY KEY(idItinerary, idZone),
-FOREIGN KEY(idItinerary) REFERENCES Itineraries(idItinerary)
+DROP TABLE IF EXISTS route;
+CREATE TABLE route(
+itinerary_id INT NOT NULL,
+zone_id INT NOT NULL,
+route_date DATE,
+PRIMARY KEY(itinerary_id, idZone),
+FOREIGN KEY(itinerary_id) REFERENCES itinerary(itinerary_id)
 ON UPDATE CASCADE ON DELETE RESTRICT,
-FOREIGN KEY(idZone) REFERENCES Zones(idZone)
+FOREIGN KEY(zone_id) REFERENCES zone(zone_id)
 ON UPDATE CASCADE ON DELETE RESTRICT
 );
 
 -- Table Influx
-DROP TABLE IF EXISTS Influx;
-CREATE TABLE Influx(
-Dates DATE NOT NULL,
-Visitors INT,
-Revenue DECIMAL(2),
-idItinerary INT NOT NULL,
-PRIMARY KEY(Dates, idItinerary),
-FOREIGN KEY(idItinerary) REFERENCES Itineraries(idItinerary)
+DROP TABLE IF EXISTS influx;
+CREATE TABLE influx(
+influx_date DATE NOT NULL,
+no_visitors INT,
+revenue DECIMAL(2),
+itinerary_id INT NOT NULL,
+PRIMARY KEY(influx_date, itinerary_id),
+FOREIGN KEY(itinerary_id) REFERENCES itinerary(itinerary_id)
 ON UPDATE CASCADE ON DELETE RESTRICT
 );
 
 -- Table Employees
-DROP TABLE IF EXISTS Employees;
-CREATE TABLE Employees(
-idEmployee INT NOT NULL AUTO_INCREMENT,
-Employee_Name VARCHAR(45),
-Address VARCHAR(90),
-Phone VARCHAR(45),
-HiringDate DATE,
-Manager VARCHAR(45),
-Role VARCHAR(45),
-PRIMARY KEY(idEmployee)
+DROP TABLE IF EXISTS staff;
+CREATE TABLE staff(
+staff_id INT NOT NULL AUTO_INCREMENT,
+staff_name VARCHAR(45),
+address VARCHAR(90),
+phone VARCHAR(45),
+hiring_date DATE,
+manager VARCHAR(45),
+staff_role VARCHAR(45),
+PRIMARY KEY(staff_id)
 );
 
 -- Table Salaries
-DROP TABLE IF EXISTS Salaries;
-CREATE TABLE Salaries(
-Salary_Date DATE NOT NULL,
-BaseSalary DECIMAL(2),
-ExtraSalary DECIMAL(2),
-ManagerExtra DECIMAL(2),
-TotalSalary DECIMAL(2),
-idEmployee INT NOT NULL,
-PRIMARY KEY(Dates, idEmployee),
-FOREIGN KEY(idEmployee) REFERENCES Employees(idEmployee)
+DROP TABLE IF EXISTS salary;
+CREATE TABLE salary(
+salary_date DATE NOT NULL,
+base_salary DECIMAL(2),
+extra_salary DECIMAL(2),
+manager_extra DECIMAL(2),
+total_salary DECIMAL(2),
+staff_id INT NOT NULL,
+PRIMARY KEY(salary_date, staff_id),
+FOREIGN KEY(staff_id) REFERENCES staff(staff_id)
 ON UPDATE CASCADE ON DELETE CASCADE
 );
 
 -- Table Guides
-DROP TABLE IF EXISTS Guides;
-CREATE TABLE Guides(
-idEmployee INT NOT NULL,
-idItinerary INT NOT NULL,
-Guide_Date DATE,
-Hours TIME,
-PRIMARY KEY(idEmployee, idItinerary),
-FOREIGN KEY(idEmployee) REFERENCES Employees(idEmployee)
+DROP TABLE IF EXISTS guide;
+CREATE TABLE guide(
+staff_id INT NOT NULL,
+itinerary_id INT NOT NULL,
+guide_date DATE,
+guide_hour TIME,
+PRIMARY KEY(staff_id, itinerary_id),
+FOREIGN KEY(staff_id) REFERENCES staff(staff_id)
 ON UPDATE CASCADE ON DELETE RESTRICT,
-FOREIGN KEY(idItinerary) REFERENCES Itineraries(idItinerary)
+FOREIGN KEY(itinerary_id) REFERENCES itinerary(itinerary_id)
 ON UPDATE CASCADE ON DELETE RESTRICT
 );
 
 -- Caretakers
-DROP TABLE IF EXISTS Caretakers;
-CREATE TABLE Caretakers(
-idEmployee INT NOT NULL,
-idSpecies INT NOT NULL,
-Caretaker_Date DATE,
-PRIMARY KEY(idEmployee, idSpecies),
-FOREIGN KEY(idEmployee) REFERENCES Employees(idEmployee)
+DROP TABLE IF EXISTS caretaker;
+CREATE TABLE caretaker(
+staff_id INT NOT NULL,
+species_id INT NOT NULL,
+caretaker_date DATE,
+PRIMARY KEY(staff_id, idSpecies),
+FOREIGN KEY(staff_id) REFERENCES staff(staff_id)
 ON UPDATE CASCADE ON DELETE RESTRICT,
-FOREIGN KEY(idSpecies) REFERENCES Species(idSpecies)
+FOREIGN KEY(species_id) REFERENCES species(species_id)
 ON UPDATE CASCADE ON DELETE RESTRICT
 );
 
 -- Stored Procedure to Add Species
-DROP PROCEDURE IF EXISTS AddSpecies;
+DROP PROCEDURE IF EXISTS add_species;
 DELIMITER //
-CREATE PROCEDURE AddSpecies(
-IN valCommonName VARCHAR(45),
-IN valScientificName VARCHAR(45),
-IN valGeneralDescription VARCHAR(100)
+CREATE PROCEDURE add_species(
+IN common_name_value VARCHAR(45),
+IN scientific_name_value VARCHAR(45),
+IN general_description_value VARCHAR(100)
 )
 BEGIN
-INSERT INTO Species(CommonName, ScientificName, GeneralDescription)
-VALUES (valCommonName, valScientificName, valGeneralDescription);
-SELECT CONCAT('Added Species: ', valCommonName);
-END
-//
+	INSERT INTO species(common_name, scientific_name, general_description)
+	VALUES (common_name_value, scientific_name_value, general_description_value);
+    
+	SELECT CONCAT('Added Species: ', common_name_value);
+END//
 DELIMITER ;
 
 -- Adding some data for the Species Table
-CALL AddSpecies_sp("Rabbit", "Oryctolagus cuniculus", "Small mammal in the family Leporidae.");
-CALL AddSpecies_sp("Duck", "Anas platyrhynchos", "Dabbling duck with green head.");
-CALL AddSpecies_sp("Guinea pig", "Cavia porcellus", "Rodent belonging to the genus Cavia in the family Caviidae.");
-CALL AddSpecies_sp("Giant panda", "Ailuropoda melanoleuca", "Bear species endemic to China.");
-CALL AddSpecies_sp("Mexican wolf", "Canis lupus baileyi", "Subspecies of gray wolf native to southeastern United States, and northern Mexico.");
-CALL AddSpecies_sp("Teporingo ", "Romerolagus diazi", "Small rabbit that resides in the mountains of Mexico.");
+CALL add_species("Rabbit", "Oryctolagus cuniculus", "Small mammal in the family Leporidae.");
+CALL add_species("Duck", "Anas platyrhynchos", "Dabbling duck with green head.");
+CALL add_species("Guinea pig", "Cavia porcellus", "Rodent belonging to the genus Cavia in the family Caviidae.");
+CALL add_species("Giant panda", "Ailuropoda melanoleuca", "Bear species endemic to China.");
+CALL add_species("Mexican wolf", "Canis lupus baileyi", "Subspecies of gray wolf native to southeastern United States, and northern Mexico.");
+CALL add_species("Teporingo ", "Romerolagus diazi", "Small rabbit that resides in the mountains of Mexico.");
 
 -- Stored Procedure to Delete Species
-DROP PROCEDURE IF EXISTS DeleteSpecies;
+DROP PROCEDURE IF EXISTS delete_species;
 DELIMITER //
-CREATE PROCEDURE DeleteSpecies(
-IN valScientificName VARCHAR(45)
+CREATE PROCEDURE delete_species(
+IN species_id_value INT
 )
 BEGIN
-DELETE FROM Species
-WHERE ScientificName = valScientificName;
-SELECT CONCAT('Deleted Species: ', valScientificName);
-END
-//
+	DECLARE deleted_species VARCHAR(45);
+
+	SELECT scientific_name 
+	INTO deleted_species
+	FROM mytable
+	WHERE species_id = species_id_value;
+
+	DELETE FROM species
+	WHERE species_id = species_id_value;
+	SELECT CONCAT('Deleted Species: ', deleted_species);
+END//
 DELIMITER ;
