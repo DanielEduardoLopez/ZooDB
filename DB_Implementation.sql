@@ -183,7 +183,7 @@ ON UPDATE CASCADE ON DELETE RESTRICT
 -- Stored Procedure to Add Species
 DROP PROCEDURE IF EXISTS AddSpecies;
 DELIMITER //
-CREATE PROCEDURE AddSpecies_sp(
+CREATE PROCEDURE AddSpecies(
 IN valCommonName VARCHAR(45),
 IN valScientificName VARCHAR(45),
 IN valGeneralDescription VARCHAR(100)
@@ -191,8 +191,29 @@ IN valGeneralDescription VARCHAR(100)
 BEGIN
 INSERT INTO Species(CommonName, ScientificName, GeneralDescription)
 VALUES (valCommonName, valScientificName, valGeneralDescription);
+SELECT CONCAT('Added Species: ', valCommonName);
 END
 //
 DELIMITER ;
 
-CALL AddSpecies();
+-- Adding some data for the Species Table
+CALL AddSpecies_sp("Rabbit", "Oryctolagus cuniculus", "Small mammal in the family Leporidae.");
+CALL AddSpecies_sp("Duck", "Anas platyrhynchos", "Dabbling duck with green head.");
+CALL AddSpecies_sp("Guinea pig", "Cavia porcellus", "Rodent belonging to the genus Cavia in the family Caviidae.");
+CALL AddSpecies_sp("Giant panda", "Ailuropoda melanoleuca", "Bear species endemic to China.");
+CALL AddSpecies_sp("Mexican wolf", "Canis lupus baileyi", "Subspecies of gray wolf native to southeastern United States, and northern Mexico.");
+CALL AddSpecies_sp("Teporingo ", "Romerolagus diazi", "Small rabbit that resides in the mountains of Mexico.");
+
+-- Stored Procedure to Delete Species
+DROP PROCEDURE IF EXISTS DeleteSpecies;
+DELIMITER //
+CREATE PROCEDURE DeleteSpecies(
+IN valScientificName VARCHAR(45)
+)
+BEGIN
+DELETE FROM Species
+WHERE ScientificName = valScientificName;
+SELECT CONCAT('Deleted Species: ', valScientificName);
+END
+//
+DELIMITER ;
