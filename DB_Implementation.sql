@@ -180,6 +180,7 @@ FOREIGN KEY(species_id) REFERENCES species(species_id)
 ON UPDATE CASCADE ON DELETE RESTRICT
 );
 
+-- STORES PROCEDURES
 -- Stored Procedure to Add Species
 DROP PROCEDURE IF EXISTS add_species;
 DELIMITER //
@@ -249,7 +250,7 @@ CALL add_habitat("Forest", "Sub-tropical highland", "Pine, oak");
 CALL add_habitat("Grassland", "Sub-tropical highland", "Pine, alder, grass");
 
 
--- Stored Procedure to Add Habitats
+-- Stored Procedure to Delete Habitats
 DROP PROCEDURE IF EXISTS delete_habitat;
 DELIMITER //
 CREATE PROCEDURE delete_habitat(
@@ -269,4 +270,70 @@ BEGIN
 	SELECT CONCAT('Deleted Habitat: ', deleted_habitat);
 END//
 DELIMITER ;
+
+-- Stored Procedure to Add species_habitat
+DROP PROCEDURE IF EXISTS add_species_habitat;
+DELIMITER //
+CREATE PROCEDURE add_species_habitat(
+IN scientific_name_value VARCHAR(45),
+IN habitat_id_value INT
+)
+BEGIN
+	DECLARE species_id_value INT;
+	
+	SELECT species_id
+	INTO species_id_value
+	FROM species
+	WHERE scientific_name = scientific_name_value;
+	
+	DECLARE habitat_name_value VARCHAR(45);
+	
+	SELECT habitat_name
+	INTO habitat_name_value
+	FROM habitat
+	WHERE habitat_id = habitat_id_value;
+
+	INSERT INTO species_habitat(species_id, habitat_id)
+	VALUES (species_id_value, habitat_id_value);
+    
+	SELECT CONCAT('Added Species-Habitat relationship: ', scientific_name_value, "-", habitat_name_value);
+END//
+DELIMITER ;
+
+CALL add_species_habitat("Oryctolagus cuniculus", 1);
+CALL add_species_habitat("Anas platyrhynchos", 2);
+CALL add_species_habitat("Cavia porcellus", 3);
+CALL add_species_habitat("Ailuropoda melanoleuca", 4);
+CALL add_species_habitat("Canis lupus baileyi", 5);
+CALL add_species_habitat("Romerolagus diazi", 6);
+
+-- Stored Procedure to Delete species_habitat
+DROP PROCEDURE IF EXISTS delete_species_habitat;
+DELIMITER //
+CREATE PROCEDURE delete_species_habitat(
+IN scientific_name_value VARCHAR(45),
+IN habitat_id_value INT
+)
+BEGIN
+	DECLARE species_id_value INT;
+	
+	SELECT species_id
+	INTO species_id_value
+	FROM species
+	WHERE scientific_name = scientific_name_value;
+	
+	DECLARE habitat_name_value VARCHAR(45);
+	
+	SELECT habitat_name
+	INTO habitat_name_value
+	FROM habitat
+	WHERE habitat_id = habitat_id_value;
+	
+	DELETE FROM species_habitat
+	WHERE habitat_id = habitat_id_value AND species_id = species_id_value;
+    
+	SELECT CONCAT('Deleted Species-Habitat relationship: ', scientific_name_value, "-", habitat_name_value);
+END//
+DELIMITER ;
+
 
