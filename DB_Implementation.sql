@@ -215,11 +215,58 @@ BEGIN
 
 	SELECT scientific_name 
 	INTO deleted_species
-	FROM mytable
+	FROM species
 	WHERE species_id = species_id_value;
 
 	DELETE FROM species
 	WHERE species_id = species_id_value;
+	
 	SELECT CONCAT('Deleted Species: ', deleted_species);
 END//
 DELIMITER ;
+
+-- Stored Procedure to Add Habitats
+DROP PROCEDURE IF EXISTS add_habitat;
+DELIMITER //
+CREATE PROCEDURE add_habitat(
+IN habitat_name_value VARCHAR(45),
+IN climate_value VARCHAR(45),
+IN vegetation_value VARCHAR(45)
+)
+BEGIN
+	INSERT INTO habitat(habitat_name, climate, vegetation)
+	VALUES (habitat_name_value, climate_value, vegetation_value);
+    
+	SELECT CONCAT('Added Habitat: ', habitat_name_value);
+END//
+DELIMITER ;
+
+CALL add_habitat("Grassland", "Cold semi-arid", "Hedgerows, scrub, and woodland");
+CALL add_habitat("Cosmopolitan", "Variable", "Variable");
+CALL add_habitat("Rocky Areas", "Tundra", "Coarse vegetation");
+CALL add_habitat("Forest", "Humid sub-tropical", "Bamboo");
+CALL add_habitat("Forest", "Sub-tropical highland", "Pine, oak");
+CALL add_habitat("Grassland", "Sub-tropical highland", "Pine, alder, grass");
+
+
+-- Stored Procedure to Add Habitats
+DROP PROCEDURE IF EXISTS delete_habitat;
+DELIMITER //
+CREATE PROCEDURE delete_habitat(
+IN habitat_id_value VARCHAR(45)
+)
+BEGIN
+	DECLARE deleted_habitat VARCHAR(45);
+	
+	SELECT habitat_name 
+	INTO deleted_habitat
+	FROM habitat 
+	WHERE habitat_id = habitat_id_value;
+	
+	DELETE FROM habitat
+	WHERE habitat_id = habitat_id_value;
+    
+	SELECT CONCAT('Deleted Habitat: ', deleted_habitat);
+END//
+DELIMITER ;
+
