@@ -336,4 +336,46 @@ BEGIN
 END//
 DELIMITER ;
 
+-- Stored Procedure to Add Continents
+DROP PROCEDURE IF EXISTS add_continent;
+DELIMITER //
+CREATE PROCEDURE add_continent(
+IN continent_name_value VARCHAR(45),
+)
+BEGIN
+
+	INSERT INTO continent(continent_name)
+	VALUES (continent_name_value);
+    
+	SELECT CONCAT('Added Continent: ', continent_name_value);
+END//
+DELIMITER ;
+
+CALL add_continent('America')
+CALL add_continent('Europe')
+CALL add_continent('Asia')
+CALL add_continent('Africa')
+CALL add_continent('Oceania')
+
+-- Stored Procedure to Delete Continents
+DROP PROCEDURE IF EXISTS delete_continent;
+DELIMITER //
+CREATE PROCEDURE delete_continent(
+IN continent_name_value VARCHAR(45),
+)
+BEGIN
+
+	DECLARE continent_id_value INT;
+
+	SELECT continent_id
+	INTO continent_id_value
+	FROM continent
+	WHERE continent_name = continent_name_value;
+
+	DELETE FROM continent
+	WHERE continent_id = continent_id_value;
+    
+	SELECT CONCAT('Deleted Continent: ', continent_name_value);
+END//
+DELIMITER ;
 
