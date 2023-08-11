@@ -84,7 +84,7 @@ zone_id INT NOT NULL,
 PRIMARY KEY(cage_id),
 FOREIGN KEY(species_id) REFERENCES species(species_id)
 ON UPDATE CASCADE ON DELETE RESTRICT,
-FOREIGN KEY(zone_id) REFERENCES zones(zone_id)
+FOREIGN KEY(zone_id) REFERENCES zone(zone_id)
 ON UPDATE CASCADE ON DELETE RESTRICT
 );
 
@@ -107,7 +107,7 @@ CREATE TABLE route(
 itinerary_id INT NOT NULL,
 zone_id INT NOT NULL,
 route_date DATE,
-PRIMARY KEY(itinerary_id, idZone),
+PRIMARY KEY(itinerary_id, zone_id),
 FOREIGN KEY(itinerary_id) REFERENCES itinerary(itinerary_id)
 ON UPDATE CASCADE ON DELETE RESTRICT,
 FOREIGN KEY(zone_id) REFERENCES zone(zone_id)
@@ -173,7 +173,7 @@ CREATE TABLE caretaker(
 staff_id INT NOT NULL,
 species_id INT NOT NULL,
 caretaker_date DATE,
-PRIMARY KEY(staff_id, idSpecies),
+PRIMARY KEY(staff_id, species_id),
 FOREIGN KEY(staff_id) REFERENCES staff(staff_id)
 ON UPDATE CASCADE ON DELETE RESTRICT,
 FOREIGN KEY(species_id) REFERENCES species(species_id)
@@ -249,7 +249,6 @@ CALL add_habitat("Forest", "Humid sub-tropical", "Bamboo");
 CALL add_habitat("Forest", "Sub-tropical highland", "Pine, oak");
 CALL add_habitat("Grassland", "Sub-tropical highland", "Pine, alder, grass");
 
-
 -- Stored Procedure to Delete Habitats
 DROP PROCEDURE IF EXISTS delete_habitat;
 DELIMITER //
@@ -280,14 +279,13 @@ IN habitat_id_value INT
 )
 BEGIN
 	DECLARE species_id_value INT;
+    DECLARE habitat_name_value VARCHAR(45);
 	
 	SELECT species_id
 	INTO species_id_value
 	FROM species
 	WHERE scientific_name = scientific_name_value;
-	
-	DECLARE habitat_name_value VARCHAR(45);
-	
+			
 	SELECT habitat_name
 	INTO habitat_name_value
 	FROM habitat
@@ -307,6 +305,7 @@ CALL add_species_habitat("Ailuropoda melanoleuca", 4);
 CALL add_species_habitat("Canis lupus baileyi", 5);
 CALL add_species_habitat("Romerolagus diazi", 6);
 
+
 -- Stored Procedure to Delete species_habitat
 DROP PROCEDURE IF EXISTS delete_species_habitat;
 DELIMITER //
@@ -316,14 +315,13 @@ IN habitat_id_value INT
 )
 BEGIN
 	DECLARE species_id_value INT;
+    DECLARE habitat_name_value VARCHAR(45);
 	
 	SELECT species_id
 	INTO species_id_value
 	FROM species
 	WHERE scientific_name = scientific_name_value;
-	
-	DECLARE habitat_name_value VARCHAR(45);
-	
+		
 	SELECT habitat_name
 	INTO habitat_name_value
 	FROM habitat
@@ -340,7 +338,7 @@ DELIMITER ;
 DROP PROCEDURE IF EXISTS add_continent;
 DELIMITER //
 CREATE PROCEDURE add_continent(
-IN continent_name_value VARCHAR(45),
+IN continent_name_value VARCHAR(45)
 )
 BEGIN
 
@@ -351,17 +349,17 @@ BEGIN
 END//
 DELIMITER ;
 
-CALL add_continent('America')
-CALL add_continent('Europe')
-CALL add_continent('Asia')
-CALL add_continent('Africa')
-CALL add_continent('Oceania')
+CALL add_continent('America');
+CALL add_continent('Europe');
+CALL add_continent('Asia');
+CALL add_continent('Africa');
+CALL add_continent('Oceania');
 
 -- Stored Procedure to Delete Continents
 DROP PROCEDURE IF EXISTS delete_continent;
 DELIMITER //
 CREATE PROCEDURE delete_continent(
-IN continent_name_value VARCHAR(45),
+IN continent_name_value VARCHAR(45)
 )
 BEGIN
 
