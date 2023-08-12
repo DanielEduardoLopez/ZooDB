@@ -193,7 +193,7 @@ BEGIN
 	INSERT INTO species(common_name, scientific_name, general_description)
 	VALUES (common_name_value, scientific_name_value, general_description_value);
     
-	SELECT CONCAT('Added Species: ', common_name_value);
+	SELECT CONCAT('Added Species: ', common_name_value) AS 'Added Species';
 END//
 DELIMITER ;
 
@@ -222,7 +222,7 @@ BEGIN
 	DELETE FROM species
 	WHERE species_id = species_id_value;
 	
-	SELECT CONCAT('Deleted Species: ', deleted_species);
+	SELECT CONCAT('Deleted Species: ', deleted_species) AS 'Deleted Species';
 END//
 DELIMITER ;
 
@@ -238,7 +238,7 @@ BEGIN
 	INSERT INTO habitat(habitat_name, climate, vegetation)
 	VALUES (habitat_name_value, climate_value, vegetation_value);
     
-	SELECT CONCAT('Added Habitat: ', habitat_name_value);
+	SELECT CONCAT('Added Habitat: ', habitat_name_value) AS 'Added Habitat';
 END//
 DELIMITER ;
 
@@ -266,7 +266,7 @@ BEGIN
 	DELETE FROM habitat
 	WHERE habitat_id = habitat_id_value;
     
-	SELECT CONCAT('Deleted Habitat: ', deleted_habitat);
+	SELECT CONCAT('Deleted Habitat: ', deleted_habitat) AS 'Deleted Habitat';
 END//
 DELIMITER ;
 
@@ -294,7 +294,7 @@ BEGIN
 	INSERT INTO species_habitat(species_id, habitat_id)
 	VALUES (species_id_value, habitat_id_value);
     
-	SELECT CONCAT('Added Species-Habitat relationship: ', scientific_name_value, "-", habitat_name_value);
+	SELECT CONCAT('Added Species-Habitat relationship: ', scientific_name_value, "-", habitat_name_value) AS 'Added Species-Habitat';
 END//
 DELIMITER ;
 
@@ -330,7 +330,7 @@ BEGIN
 	DELETE FROM species_habitat
 	WHERE habitat_id = habitat_id_value AND species_id = species_id_value;
     
-	SELECT CONCAT('Deleted Species-Habitat relationship: ', scientific_name_value, "-", habitat_name_value);
+	SELECT CONCAT('Deleted Species-Habitat relationship: ', scientific_name_value, "-", habitat_name_value) AS 'Deleted Species-Habitat';
 END//
 DELIMITER ;
 
@@ -345,7 +345,7 @@ BEGIN
 	INSERT INTO continent(continent_name)
 	VALUES (continent_name_value);
     
-	SELECT CONCAT('Added Continent: ', continent_name_value);
+	SELECT CONCAT('Added Continent: ', continent_name_value) AS 'Added Continent';
 END//
 DELIMITER ;
 
@@ -373,7 +373,8 @@ BEGIN
 	DELETE FROM continent
 	WHERE continent_id = continent_id_value;
     
-	SELECT CONCAT('Deleted Continent: ', continent_name_value);
+	SELECT CONCAT('Deleted Continent: ', continent_name_value) AS 'Deleted Continent';
 END//
 DELIMITER ;
+
 
