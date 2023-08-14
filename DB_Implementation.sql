@@ -242,6 +242,7 @@ BEGIN
 END//
 DELIMITER ;
 
+-- Adding data to the table habitat
 CALL add_habitat("Grassland", "Cold semi-arid", "Hedgerows, scrub, and woodland");
 CALL add_habitat("Cosmopolitan", "Variable", "Variable");
 CALL add_habitat("Rocky Areas", "Tundra", "Coarse vegetation");
@@ -298,6 +299,7 @@ BEGIN
 END//
 DELIMITER ;
 
+-- Adding data to the table species_habitat
 CALL add_species_habitat("Oryctolagus cuniculus", 1);
 CALL add_species_habitat("Anas platyrhynchos", 2);
 CALL add_species_habitat("Cavia porcellus", 3);
@@ -349,6 +351,7 @@ BEGIN
 END//
 DELIMITER ;
 
+-- Adding data to the table continent
 CALL add_continent('America');
 CALL add_continent('Europe');
 CALL add_continent('Asia');
@@ -407,6 +410,7 @@ BEGIN
 END//
 DELIMITER ;
 
+-- Adding data to the table habitat_continent
 CALL add_habitat_continent(1, 'Europe');
 CALL add_habitat_continent(2, 'Various');
 CALL add_habitat_continent(3, 'America');
@@ -441,3 +445,48 @@ BEGIN
 	SELECT CONCAT(habitat_name_value, "-", continent_name_value) AS 'Deleted Habitat-Continent Relationship';
 END//
 DELIMITER ;
+
+-- Stored Procedure to Add Zones
+DROP PROCEDURE IF EXISTS add_zone;
+DELIMITER //
+CREATE PROCEDURE add_zone(
+zone_name_value VARCHAR(45),
+size_value DECIMAL(2)
+)
+BEGIN
+
+	INSERT INTO zone(zone_name, size)
+	VALUES (zone_name_value, size_value);
+    
+	SELECT zone_name_value AS 'Added Zone';
+END//
+DELIMITER ;
+
+-- Adding data to the table zone
+CALL add_zone('Tropical forest', 1.7);
+CALL add_zone('Temperate forest', 1.7);
+CALL add_zone('Coastal Line', 0.9);
+CALL add_zone('Aviary', 0.2);
+CALL add_zone('Grasslands', 1.5);
+CALL add_zone('Desert', 2.0);
+
+-- Stored Procedure to Delete Zones
+DROP PROCEDURE IF EXISTS delete_zone;
+DELIMITER //
+CREATE PROCEDURE delete_zone(
+zone_name_value VARCHAR(45)
+)
+BEGIN
+	DECLARE zone_id_value INT;
+    
+    SELECT zone_id
+    INTO zone_id_value
+    FROM zone
+    WHERE zone_name = zone_name_value;
+    
+    DELETE FROM zone
+    WHERE zone_id = zone_id_value;
+    
+    SELECT zone_name_value AS 'Deleted Zone';
+END//
+
