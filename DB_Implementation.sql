@@ -193,7 +193,7 @@ BEGIN
 	INSERT INTO species(common_name, scientific_name, general_description)
 	VALUES (common_name_value, scientific_name_value, general_description_value);
     
-	SELECT CONCAT('Added Species: ', common_name_value) AS 'Added Species';
+	SELECT common_name_value AS 'Added Species';
 END//
 DELIMITER ;
 
@@ -222,7 +222,7 @@ BEGIN
 	DELETE FROM species
 	WHERE species_id = species_id_value;
 	
-	SELECT CONCAT('Deleted Species: ', deleted_species) AS 'Deleted Species';
+	SELECT deleted_species AS 'Deleted Species';
 END//
 DELIMITER ;
 
@@ -238,7 +238,7 @@ BEGIN
 	INSERT INTO habitat(habitat_name, climate, vegetation)
 	VALUES (habitat_name_value, climate_value, vegetation_value);
     
-	SELECT CONCAT('Added Habitat: ', habitat_name_value) AS 'Added Habitat';
+	SELECT habitat_name_value AS 'Added Habitat';
 END//
 DELIMITER ;
 
@@ -266,7 +266,7 @@ BEGIN
 	DELETE FROM habitat
 	WHERE habitat_id = habitat_id_value;
     
-	SELECT CONCAT('Deleted Habitat: ', deleted_habitat) AS 'Deleted Habitat';
+	SELECT deleted_habitat AS 'Deleted Habitat';
 END//
 DELIMITER ;
 
@@ -294,7 +294,7 @@ BEGIN
 	INSERT INTO species_habitat(species_id, habitat_id)
 	VALUES (species_id_value, habitat_id_value);
     
-	SELECT CONCAT('Added Species-Habitat relationship: ', scientific_name_value, "-", habitat_name_value) AS 'Added Species-Habitat';
+	SELECT CONCAT(scientific_name_value, "-", habitat_name_value) AS 'Added Species-Habitat Relationship';
 END//
 DELIMITER ;
 
@@ -330,7 +330,7 @@ BEGIN
 	DELETE FROM species_habitat
 	WHERE habitat_id = habitat_id_value AND species_id = species_id_value;
     
-	SELECT CONCAT('Deleted Species-Habitat relationship: ', scientific_name_value, "-", habitat_name_value) AS 'Deleted Species-Habitat';
+	SELECT CONCAT(scientific_name_value, "-", habitat_name_value) AS 'Deleted Species-Habitat Relationship';
 END//
 DELIMITER ;
 
@@ -345,7 +345,7 @@ BEGIN
 	INSERT INTO continent(continent_name)
 	VALUES (continent_name_value);
     
-	SELECT CONCAT('Added Continent: ', continent_name_value) AS 'Added Continent';
+	SELECT continent_name_value AS 'Added Continent';
 END//
 DELIMITER ;
 
@@ -354,6 +354,7 @@ CALL add_continent('Europe');
 CALL add_continent('Asia');
 CALL add_continent('Africa');
 CALL add_continent('Oceania');
+CALL add_continent('Various');
 
 -- Stored Procedure to Delete Continents
 DROP PROCEDURE IF EXISTS delete_continent;
@@ -373,8 +374,70 @@ BEGIN
 	DELETE FROM continent
 	WHERE continent_id = continent_id_value;
     
-	SELECT CONCAT('Deleted Continent: ', continent_name_value) AS 'Deleted Continent';
+	SELECT continent_name_value AS 'Deleted Continent';
 END//
 DELIMITER ;
 
 
+-- Stored Procedure to Add Habitat-Continents
+DROP PROCEDURE IF EXISTS add_habitat_continent;
+DELIMITER //
+CREATE PROCEDURE add_habitat_continent(
+IN habitat_id_value INT,
+IN continent_name_value VARCHAR(45)
+)
+BEGIN
+	DECLARE continent_id_value INT;
+    DECLARE habitat_name_value VARCHAR(45);
+	
+	SELECT continent_id
+	INTO continent_id_value
+	FROM continent
+	WHERE continent_name = continent_name_value;
+			
+	SELECT habitat_name
+	INTO habitat_name_value
+	FROM habitat
+	WHERE habitat_id = habitat_id_value;
+
+	INSERT INTO habitat_continent(habitat_id, continent_id)
+	VALUES (habitat_id_value, continent_id_value);
+    
+	SELECT CONCAT(habitat_name_value, "-", continent_name_value) AS 'Added Habitat-Continent Relationship';
+END//
+DELIMITER ;
+
+CALL add_habitat_continent(1, 'Europe');
+CALL add_habitat_continent(2, 'Various');
+CALL add_habitat_continent(3, 'America');
+CALL add_habitat_continent(4, 'Asia');
+CALL add_habitat_continent(5, 'America');
+CALL add_habitat_continent(6, 'America');
+
+-- Stored Procedure to Delete species_habitat
+DROP PROCEDURE IF EXISTS delete_habitat_continent;
+DELIMITER //
+CREATE PROCEDURE delete_habitat_continent(
+IN habitat_id_value INT,
+IN continent_name_value VARCHAR(45)
+)
+BEGIN
+	DECLARE continent_id_value INT;
+    DECLARE habitat_name_value VARCHAR(45);
+	
+	SELECT continent_id
+	INTO continent_id_value
+	FROM continent
+	WHERE continent_name = continent_name_value;
+			
+	SELECT habitat_name
+	INTO habitat_name_value
+	FROM habitat
+	WHERE habitat_id = habitat_id_value;
+	
+	DELETE FROM habitat_continent
+	WHERE habitat_id = habitat_id_value AND continent_id = continent_id_value;
+    
+	SELECT CONCAT(habitat_name_value, "-", continent_name_value) AS 'Deleted Habitat-Continent Relationship';
+END//
+DELIMITER ;
