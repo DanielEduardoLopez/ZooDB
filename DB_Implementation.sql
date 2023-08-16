@@ -329,8 +329,12 @@ BEGIN
 	FROM habitat
 	WHERE habitat_id = habitat_id_value;
 	
+    SET FOREIGN_KEY_CHECKS = 0;
+    
 	DELETE FROM species_habitat
 	WHERE habitat_id = habitat_id_value AND species_id = species_id_value;
+    
+    SET FOREIGN_KEY_CHECKS = 1;
     
 	SELECT CONCAT(scientific_name_value, "-", habitat_name_value) AS 'Deleted Species-Habitat Relationship';
 END//
@@ -439,8 +443,12 @@ BEGIN
 	FROM habitat
 	WHERE habitat_id = habitat_id_value;
 	
+    SET FOREIGN_KEY_CHECKS = 0;
+    
 	DELETE FROM habitat_continent
 	WHERE habitat_id = habitat_id_value AND continent_id = continent_id_value;
+    
+    SET FOREIGN_KEY_CHECKS = 1;
     
 	SELECT CONCAT(habitat_name_value, "-", continent_name_value) AS 'Deleted Habitat-Continent Relationship';
 END//
@@ -488,5 +496,58 @@ BEGIN
     WHERE zone_id = zone_id_value;
     
     SELECT zone_name_value AS 'Deleted Zone';
+END//
+
+-- Stored Procedure to Add Cages
+DROP PROCEDURE IF EXISTS add_cage;
+DELIMITER //
+CREATE PROCEDURE add_cage(
+scientific_name_value VARCHAR(45),
+zone_name_value VARCHAR(45),
+occupants_value INT
+)
+BEGIN
+	DECLARE species_id_value INT;
+    DECLARE zone_id_value INT;
+    
+    SELECT species_id
+    INTO species_id_value
+    FROM species
+    WHERE scientific_name = scientific_name_value;
+    
+    SELECT zone_id
+    INTO zone_id_value
+    FROM zone
+    WHERE zone_name = zone_name_value;
+    
+    INSERT INTO cage(occupants, species_id, zone_id)
+    VALUES (occupants_value, species_id_value, zone_id_value);    
+    
+    SELECT CONCAT(occupants_value, ' ', scientific_name_value, ' in ', zone_name_value) AS 'Added Cage';
+END//
+
+-- Adding data to the table cage
+CALL add_cage('Oryctolagus cuniculus', 'Grasslands', 20);
+CALL add_cage('Anas platyrhynchos', 'Aviary', 10);
+CALL add_cage('Cavia porcellus', 'Temperate forest', 15);
+CALL add_cage('Ailuropoda melanoleuca', 'Tropical forest', 2);
+CALL add_cage('Canis lupus baileyi', 'Desert', 4);
+CALL add_cage('Romerolagus diazi', 'Temperate forest', 30);
+
+-- Store procedure to Delete Cages
+DROP PROCEDURE IF EXISTS delete_cage;
+DELIMITER //
+CREATE PROCEDURE delete_cage(
+cage_id_value INT
+)
+BEGIN
+	SET FOREIGN_KEY_CHECKS = 0;
+
+    DELETE FROM cage
+    WHERE cage_id = cage_id_value;
+    
+    SET FOREIGN_KEY_CHECKS = 1;
+    
+    SELECT cage_id_value AS 'Deleted Cage';
 END//
 
