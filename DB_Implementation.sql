@@ -92,24 +92,21 @@ ON UPDATE CASCADE ON DELETE RESTRICT
 DROP TABLE IF EXISTS itinerary;
 CREATE TABLE itinerary(
 itinerary_id INT NOT NULL AUTO_INCREMENT,
-duration DECIMAL(1), 
+duration DECIMAL(1) CHECK (duration >= 1.0 AND duration <= 2.0), 
 start_hour TIME,
 end_hour TIME,
 itinerary_length DECIMAL(1),
 max_people INT,
 no_species INT,
 PRIMARY KEY(itinerary_id),
-CONSTRAINT duration_greater_limit CHECK (duration <= 1.5),
-CONSTRAINT duration_lower_limit CHECK (duration >= 1.0),
 CONSTRAINT max_people_value CHECK (max_people <= 10)
 );
 
--- Table Zones_Itineraries
+-- Table Route
 DROP TABLE IF EXISTS route;
 CREATE TABLE route(
 itinerary_id INT NOT NULL,
 zone_id INT NOT NULL,
-route_date DATE,
 PRIMARY KEY(itinerary_id, zone_id),
 FOREIGN KEY(itinerary_id) REFERENCES itinerary(itinerary_id)
 ON UPDATE CASCADE ON DELETE RESTRICT,
@@ -578,7 +575,7 @@ CALL add_itinerary(1.5, '12:00', '13:30', 2.0, 10, 15);
 CALL add_itinerary(1.5, '14:00', '15:30', 2.0, 10, 15);
 CALL add_itinerary(1.0, '16:00', '17:00', 1.5, 10, 10);
 
--- Store procedure to Delete Itineraries
+-- Stored procedure to Delete Itineraries
 DROP PROCEDURE IF EXISTS delete_itinerary;
 DELIMITER //
 CREATE PROCEDURE delete_itinerary(
@@ -591,4 +588,62 @@ BEGIN
     WHERE itinerary_id = itinerary_id_value;
     
     SET FOREIGN_KEY_CHECKS = 1;
+END//
+
+-- Stored procedure to Add Routes
+DROP PROCEDURE IF EXISTS add_route;
+DELIMITER //
+CREATE PROCEDURE add_route(
+itinerary_id_value INT,
+zone_name_value VARCHAR(45)
+)
+BEGIN
+	DECLARE zone_id_value INT;
+    
+	SELECT zone_id
+    INTO zone_id_value
+    FROM zone
+    WHERE zone_name = zone_name_value;
+    
+    INSERT INTO route(itinerary_id, zone_id)
+    VALUES (itinerary_id_value, zone_id_value);
+    
+    SELECT CONCAT(itinerary_id_value, ' - ', zone_name_value) AS 'Added Route';    
+END//
+
+-- Adding Data to the Route table
+CALL add_route(1, 'Tropical forest');
+CALL add_route(1, 'Temperate forest');
+CALL add_route(1, 'Grasslands');
+CALL add_route(2, 'Coastal Line');
+CALL add_route(2, 'Aviary');
+CALL add_route(2, 'Desert');
+CALL add_route(3, 'Tropical forest');
+CALL add_route(3, 'Aviary');
+CALL add_route(3, 'Grasslands');
+CALL add_route(4, 'Aviary');
+CALL add_route(4, 'Desert');
+
+-- Stored Procedure to Delete Routes
+DROP PROCEDURE IF EXISTS delete_route;
+DELIMITER //
+CREATE PROCEDURE delete_route(
+itinerary_id_value INT,
+zone_name_value VARCHAR(45)
+)
+BEGIN
+	DECLARE zone_id_value INT;
+    
+	SELECT zone_id
+    INTO zone_id_value
+    FROM zone
+    WHERE zone_name = zone_name_value;
+    
+	SET FOREIGN_KEY_CHECKS = 0;
+    
+	DELETE FROM route
+    WHERE itinerary_id = itinerary_id_value AND zone_id = zone_id_value;
+    
+    SET FOREIGN_KEY_CHECKS = 1;
+    
 END//
