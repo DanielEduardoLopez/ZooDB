@@ -92,13 +92,16 @@ ON UPDATE CASCADE ON DELETE RESTRICT
 DROP TABLE IF EXISTS itinerary;
 CREATE TABLE itinerary(
 itinerary_id INT NOT NULL AUTO_INCREMENT,
-duration DECIMAL(1),
+duration DECIMAL(1), 
 start_hour TIME,
 end_hour TIME,
 itinerary_length DECIMAL(1),
 max_people INT,
 no_species INT,
-PRIMARY KEY(itinerary_id)
+PRIMARY KEY(itinerary_id),
+CONSTRAINT duration_greater_limit CHECK (duration <= 1.5),
+CONSTRAINT duration_lower_limit CHECK (duration >= 1.0),
+CONSTRAINT max_people_value CHECK (max_people <= 10)
 );
 
 -- Table Zones_Itineraries
@@ -551,3 +554,41 @@ BEGIN
     SELECT cage_id_value AS 'Deleted Cage';
 END//
 
+-- Stored procedure to Add Itineraries
+DROP PROCEDURE IF EXISTS add_itinerary;
+DELIMITER //
+CREATE PROCEDURE add_itinerary(
+duration_value DECIMAL(1),
+start_hour_value TIME,
+end_hour_value TIME,
+itinerary_length_value DECIMAL(1),
+max_people_value INT,
+no_species_value INT
+)
+BEGIN
+	INSERT INTO itinerary(duration, start_hour, end_hour, itinerary_length, max_people, no_species)
+    VALUES (duration_value, start_hour_value, end_hour_value, itinerary_length_value, max_people_value, no_species_value);
+    
+    SELECT CONCAT('From ', start_hour_value,' to ', end_hour_value) AS 'Added Itinerary';
+END//
+
+-- Adding data to the itinerary table
+CALL add_itinerary(1.5, '10:00', '11:30', 2.0, 10, 15);
+CALL add_itinerary(1.5, '12:00', '13:30', 2.0, 10, 15);
+CALL add_itinerary(1.5, '14:00', '15:30', 2.0, 10, 15);
+CALL add_itinerary(1.0, '16:00', '17:00', 1.5, 10, 10);
+
+-- Store procedure to Delete Itineraries
+DROP PROCEDURE IF EXISTS delete_itinerary;
+DELIMITER //
+CREATE PROCEDURE delete_itinerary(
+itinerary_id_value INT
+)
+BEGIN
+	SET FOREIGN_KEY_CHECKS = 0;
+    
+	DELETE FROM itinerary
+    WHERE itinerary_id = itinerary_id_value;
+    
+    SET FOREIGN_KEY_CHECKS = 1;
+END//
