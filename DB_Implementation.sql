@@ -70,7 +70,7 @@ DROP TABLE IF EXISTS zone;
 CREATE TABLE zone(
 zone_id INT NOT NULL AUTO_INCREMENT,
 zone_name VARCHAR(45),
-size DECIMAL(2),
+size DECIMAL(10, 2),
 PRIMARY KEY(zone_id)
 );
 
@@ -92,10 +92,10 @@ ON UPDATE CASCADE ON DELETE RESTRICT
 DROP TABLE IF EXISTS itinerary;
 CREATE TABLE itinerary(
 itinerary_id INT NOT NULL AUTO_INCREMENT,
-duration DECIMAL(1) CHECK (duration >= 1.0 AND duration <= 2.0), 
+duration DECIMAL(10, 1) CHECK (duration >= 1.0 AND duration <= 2.0), 
 start_hour TIME,
 end_hour TIME,
-itinerary_length DECIMAL(1),
+itinerary_length DECIMAL(10, 2),
 max_people INT,
 no_species INT,
 PRIMARY KEY(itinerary_id),
@@ -119,7 +119,7 @@ DROP TABLE IF EXISTS influx;
 CREATE TABLE influx(
 influx_date DATE NOT NULL,
 no_visitors INT,
-revenue DECIMAL(2),
+revenue DECIMAL(10, 2),
 itinerary_id INT NOT NULL,
 PRIMARY KEY(influx_date, itinerary_id),
 FOREIGN KEY(itinerary_id) REFERENCES itinerary(itinerary_id)
@@ -143,10 +143,10 @@ PRIMARY KEY(staff_id)
 DROP TABLE IF EXISTS salary;
 CREATE TABLE salary(
 salary_date DATE NOT NULL,
-base_salary DECIMAL(2),
-extra_salary DECIMAL(2),
-manager_extra DECIMAL(2),
-total_salary DECIMAL(2),
+base_salary DECIMAL(10, 2),
+extra_salary DECIMAL(10, 2),
+manager_extra DECIMAL(10, 2),
+total_salary DECIMAL(10, 2),
 staff_id INT NOT NULL,
 PRIMARY KEY(salary_date, staff_id),
 FOREIGN KEY(staff_id) REFERENCES staff(staff_id)
@@ -459,7 +459,7 @@ DROP PROCEDURE IF EXISTS add_zone;
 DELIMITER //
 CREATE PROCEDURE add_zone(
 zone_name_value VARCHAR(45),
-size_value DECIMAL(2)
+size_value DECIMAL(10, 2)
 )
 BEGIN
 
@@ -647,3 +647,82 @@ BEGIN
     SET FOREIGN_KEY_CHECKS = 1;
     
 END//
+
+-- Stored procedure to Add influx
+DROP PROCEDURE IF EXISTS add_influx;
+DELIMITER //
+CREATE PROCEDURE add_influx(
+itinerary_id_value INT,
+influx_date_value DATE,
+no_visitors_value INT,
+revenue_value DECIMAL(10, 2)
+)
+BEGIN
+	
+    INSERT INTO influx(itinerary_id, influx_date, no_visitors, revenue)
+    VALUES (itinerary_id_value, influx_date_value, no_visitors_value, revenue_value);
+
+	SELECT CONCAT('The itinerary ', itinerary_id_value, ' had an influx of ', no_visitors_value, ' visitors and $', revenue_value, ' on ', influx_date_value) AS 'Added Influx';
+    
+END//
+
+-- Adding data to the table influx
+CALL add_influx(1, '2023-07-01', 6, 120.00);
+CALL add_influx(2, '2023-07-01', 10, 200.00);
+CALL add_influx(3, '2023-07-01', 8, 160.00);
+CALL add_influx(4, '2023-07-01', 4, 80.00);
+CALL add_influx(1, '2023-07-08', 8, 160.00);
+CALL add_influx(2, '2023-07-08', 9, 180.00);
+CALL add_influx(3, '2023-07-08', 8, 160.00);
+CALL add_influx(4, '2023-07-08', 5, 100.00);
+CALL add_influx(1, '2023-07-15', 8, 160.00);
+CALL add_influx(2, '2023-07-15', 10, 200.00);
+CALL add_influx(3, '2023-07-15', 10, 200.00);
+CALL add_influx(4, '2023-07-15', 7, 140.00);
+CALL add_influx(1, '2023-07-22', 8, 160.00);
+CALL add_influx(2, '2023-07-22', 10, 200.00);
+CALL add_influx(3, '2023-07-22', 10, 200.00);
+CALL add_influx(4, '2023-07-22', 7, 140.00);
+CALL add_influx(1, '2023-07-29', 8, 160.00);
+CALL add_influx(2, '2023-07-29', 9, 180.00);
+CALL add_influx(3, '2023-07-29', 8, 160.00);
+CALL add_influx(4, '2023-07-29', 5, 100.00);
+
+CALL add_influx(1, '2023-08-05', 6, 120.00);
+CALL add_influx(2, '2023-08-05', 10, 200.00);
+CALL add_influx(3, '2023-08-05', 8, 160.00);
+CALL add_influx(4, '2023-08-05', 4, 80.00);
+CALL add_influx(1, '2023-08-12', 8, 160.00);
+CALL add_influx(2, '2023-08-12', 9, 180.00);
+CALL add_influx(3, '2023-08-12', 8, 160.00);
+CALL add_influx(4, '2023-08-12', 5, 100.00);
+CALL add_influx(1, '2023-08-19', 8, 160.00);
+CALL add_influx(2, '2023-08-19', 10, 200.00);
+CALL add_influx(3, '2023-08-19', 10, 200.00);
+CALL add_influx(4, '2023-08-19', 7, 140.00);
+CALL add_influx(1, '2023-08-26', 8, 160.00);
+CALL add_influx(2, '2023-08-26', 10, 200.00);
+CALL add_influx(3, '2023-08-26', 10, 200.00);
+CALL add_influx(4, '2023-08-26', 7, 140.00);
+
+-- Stored procedure to delete influx
+DROP PROCEDURE IF EXISTS delete_influx;
+DELIMITER //
+CREATE PROCEDURE delete_influx(
+itinerary_id_value INT,
+influx_date_value DATE
+)
+BEGIN
+
+	SET FOREIGN_KEY_CHECKS = 0;
+    
+    DELETE FROM influx
+    WHERE itinerary_id = itinerary_id_value AND influx_date = influx_date_value;
+    
+    SET FOREIGN_KEY_CHECKS = 1;
+
+END//
+
+
+
+
