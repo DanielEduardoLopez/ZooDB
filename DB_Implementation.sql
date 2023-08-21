@@ -723,6 +723,96 @@ BEGIN
 
 END//
 
+-- Stored procedure to Add Staff
+DROP PROCEDURE IF EXISTS add_staff;
+DELIMITER //
+CREATE PROCEDURE add_staff(
+staff_name_value VARCHAR(45),
+address_value VARCHAR(90),
+phone_value VARCHAR(45),
+hiring_date_value DATE,
+manager_value VARCHAR(45),
+staff_role_value VARCHAR(45)
+)
+BEGIN
+	INSERT INTO staff(staff_name, address, phone, hiring_date, manager, staff_role)
+    VALUES (staff_name_value, address_value, phone_value, hiring_date_value, manager_value, staff_role_value);
+    
+    SELECT CONCAT(staff_name_value, ' - ', staff_role_value) AS 'Added staff';
+END//
 
+-- Adding data to table staff
+CALL add_staff('John Doe', '1357 Blane Street, Chicago, IL 67105', '(312) 555-0100', '2023-05-18', 'Rita Roe', 'Guide');
+CALL add_staff('Jane Doe', '8563 Dr. Waker Avenue, Chicago, IL 69852', '(312) 555-8110', '2023-07-01', 'Rita Roe', 'Guide');
+CALL add_staff('Larry Loe', '1986 Oakbroak Street, Chicago, IL 68150', '(312) 555-1586', '2023-03-15', 'Rita Roe', 'Guide');
+CALL add_staff('Grace Goe', '7895 Washington Street, Chicago, IL 65983', '(312) 555-7896', '2023-04-15', 'Frank Foe', 'Caretaker');
+CALL add_staff('Harry Hoe', '1235 Lincoln Street, Chicago, IL 67894', '(312) 555-1235', '2023-05-01', 'Frank Foe', 'Caretaker');
+CALL add_staff('Carla Coe', '6532 Shire Street, Chicago, IL 66897', '(312) 555-7842', '2023-03-15', 'Frank Foe', 'Caretaker');
+CALL add_staff('Rita Roe', '1555 Los Alamos Street, Chicago, IL 68150', '(312) 555-1453', '2023-01-01', 'Sammy Soe', 'Manager');
+CALL add_staff('Frank Foe', '2569 John Knox Street, Chicago, IL 68150', '(312) 555-3698', '2023-01-01', 'Sammy Soe', 'Manager');
+CALL add_staff('Sammy Soe', '1278 Charles Babbage Street, Chicago, IL 67891', '(312) 555-7879', '2023-01-01', 'Owners', 'Director');
 
+-- Stored procedure to Delete Staff
+DROP PROCEDURE IF EXISTS delete_staff;
+DELIMITER //
+CREATE PROCEDURE delete_staff(
+staff_name_value VARCHAR(45),
+staff_role_value VARCHAR(45)
+)
+BEGIN
+	
+    DECLARE staff_id_value INT;
+    
+    SELECT staff_id
+    INTO staff_id_value
+    FROM staff
+    WHERE staff_name = staff_name_value AND 
+    staff_role = staff_role_value;
+    
+	SET FOREIGN_KEY_CHECKS = 0;
+    
+    DELETE FROM staff
+    WHERE staff_id = staff_id_value;
+    
+    SET FOREIGN_KEY_CHECKS = 1;
+    
+    SELECT CONCAT(staff_name_value, ' - ', staff_role_value) AS 'Deleted Staff';
+
+END//
+
+-- Stored procedure to update a tuple in the table Staff
+DROP PROCEDURE IF EXISTS update_staff;
+DELIMITER //
+CREATE PROCEDURE update_staff(
+staff_name_value VARCHAR(45),
+staff_role_value VARCHAR(45),
+staff_name_new_value VARCHAR(45),
+address_new_value VARCHAR(90),
+phone_new_value VARCHAR(45),
+hiring_date_new_value DATE,
+manager_new_value VARCHAR(45),
+staff_role_new_value VARCHAR(45)
+)
+BEGIN
+
+	DECLARE staff_id_value INT;
+    
+    SELECT staff_id
+    INTO staff_id_value
+    FROM staff
+    WHERE staff_name = staff_name_value AND
+    staff_role = staff_role_value;
+    
+    UPDATE staff
+    SET staff_name = staff_name_new_value, 
+    address = address_new_value,
+    phone = phone_new_value,
+    hiring_date = hiring_date_new_value,
+    manager = manager_new_value,
+    staff_role = staff_role_new_value
+    WHERE staff_id = staff_id_value;
+    
+    SELECT CONCAT(staff_name_new_value, ' - ', staff_role_new_value) AS 'Updated Staff';
+    
+END//
 
