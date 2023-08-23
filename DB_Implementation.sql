@@ -139,20 +139,6 @@ staff_role VARCHAR(45),
 PRIMARY KEY(staff_id)
 );
 
--- Table Salaries
-DROP TABLE IF EXISTS salary;
-CREATE TABLE salary(
-salary_date DATE NOT NULL,
-base_salary DECIMAL(10, 2),
-extra_salary DECIMAL(10, 2),
-manager_extra DECIMAL(10, 2),
-total_salary DECIMAL(10, 2),
-staff_id INT NOT NULL,
-PRIMARY KEY(salary_date, staff_id),
-FOREIGN KEY(staff_id) REFERENCES staff(staff_id)
-ON UPDATE CASCADE ON DELETE CASCADE
-);
-
 -- Table Guides
 DROP TABLE IF EXISTS guide;
 CREATE TABLE guide(
@@ -160,7 +146,7 @@ staff_id INT NOT NULL,
 itinerary_id INT NOT NULL,
 guide_date DATE,
 guide_hour TIME,
-PRIMARY KEY(staff_id, itinerary_id),
+PRIMARY KEY(staff_id, itinerary_id, guide_date),
 FOREIGN KEY(staff_id) REFERENCES staff(staff_id)
 ON UPDATE CASCADE ON DELETE RESTRICT,
 FOREIGN KEY(itinerary_id) REFERENCES itinerary(itinerary_id)
@@ -173,11 +159,25 @@ CREATE TABLE caretaker(
 staff_id INT NOT NULL,
 species_id INT NOT NULL,
 caretaker_date DATE,
-PRIMARY KEY(staff_id, species_id),
+PRIMARY KEY(staff_id, species_id, caretaker_date),
 FOREIGN KEY(staff_id) REFERENCES staff(staff_id)
 ON UPDATE CASCADE ON DELETE RESTRICT,
 FOREIGN KEY(species_id) REFERENCES species(species_id)
 ON UPDATE CASCADE ON DELETE RESTRICT
+);
+
+-- Table Salaries
+DROP TABLE IF EXISTS salary;
+CREATE TABLE salary(
+salary_date DATE NOT NULL,
+base_salary DECIMAL(10, 2),
+extra_salary DECIMAL(10, 2),
+manager_extra DECIMAL(10, 2),
+total_salary DECIMAL(10, 2),
+staff_id INT NOT NULL,
+PRIMARY KEY(salary_date, staff_id),
+FOREIGN KEY(staff_id) REFERENCES staff(staff_id)
+ON UPDATE CASCADE ON DELETE CASCADE
 );
 
 -- STORES PROCEDURES
@@ -458,8 +458,8 @@ DELIMITER ;
 DROP PROCEDURE IF EXISTS add_zone;
 DELIMITER //
 CREATE PROCEDURE add_zone(
-zone_name_value VARCHAR(45),
-size_value DECIMAL(10, 2)
+IN zone_name_value VARCHAR(45),
+IN size_value DECIMAL(10, 2)
 )
 BEGIN
 
@@ -482,7 +482,7 @@ CALL add_zone('Desert', 2.0);
 DROP PROCEDURE IF EXISTS delete_zone;
 DELIMITER //
 CREATE PROCEDURE delete_zone(
-zone_name_value VARCHAR(45)
+IN zone_name_value VARCHAR(45)
 )
 BEGIN
 	DECLARE zone_id_value INT;
@@ -502,9 +502,9 @@ END//
 DROP PROCEDURE IF EXISTS add_cage;
 DELIMITER //
 CREATE PROCEDURE add_cage(
-scientific_name_value VARCHAR(45),
-zone_name_value VARCHAR(45),
-occupants_value INT
+IN scientific_name_value VARCHAR(45),
+IN zone_name_value VARCHAR(45),
+IN occupants_value INT
 )
 BEGIN
 	DECLARE species_id_value INT;
@@ -538,7 +538,7 @@ CALL add_cage('Romerolagus diazi', 'Temperate forest', 30);
 DROP PROCEDURE IF EXISTS delete_cage;
 DELIMITER //
 CREATE PROCEDURE delete_cage(
-cage_id_value INT
+IN cage_id_value INT
 )
 BEGIN
 	SET FOREIGN_KEY_CHECKS = 0;
@@ -555,12 +555,12 @@ END//
 DROP PROCEDURE IF EXISTS add_itinerary;
 DELIMITER //
 CREATE PROCEDURE add_itinerary(
-duration_value DECIMAL(1),
-start_hour_value TIME,
-end_hour_value TIME,
-itinerary_length_value DECIMAL(1),
-max_people_value INT,
-no_species_value INT
+IN duration_value DECIMAL(1),
+IN start_hour_value TIME,
+IN end_hour_value TIME,
+IN itinerary_length_value DECIMAL(1),
+IN max_people_value INT,
+IN no_species_value INT
 )
 BEGIN
 	INSERT INTO itinerary(duration, start_hour, end_hour, itinerary_length, max_people, no_species)
@@ -579,7 +579,7 @@ CALL add_itinerary(1.0, '16:00', '17:00', 1.5, 10, 10);
 DROP PROCEDURE IF EXISTS delete_itinerary;
 DELIMITER //
 CREATE PROCEDURE delete_itinerary(
-itinerary_id_value INT
+IN itinerary_id_value INT
 )
 BEGIN
 	SET FOREIGN_KEY_CHECKS = 0;
@@ -594,8 +594,8 @@ END//
 DROP PROCEDURE IF EXISTS add_route;
 DELIMITER //
 CREATE PROCEDURE add_route(
-itinerary_id_value INT,
-zone_name_value VARCHAR(45)
+IN itinerary_id_value INT,
+IN zone_name_value VARCHAR(45)
 )
 BEGIN
 	DECLARE zone_id_value INT;
@@ -628,8 +628,8 @@ CALL add_route(4, 'Desert');
 DROP PROCEDURE IF EXISTS delete_route;
 DELIMITER //
 CREATE PROCEDURE delete_route(
-itinerary_id_value INT,
-zone_name_value VARCHAR(45)
+IN itinerary_id_value INT,
+IN zone_name_value VARCHAR(45)
 )
 BEGIN
 	DECLARE zone_id_value INT;
@@ -652,10 +652,10 @@ END//
 DROP PROCEDURE IF EXISTS add_influx;
 DELIMITER //
 CREATE PROCEDURE add_influx(
-itinerary_id_value INT,
-influx_date_value DATE,
-no_visitors_value INT,
-revenue_value DECIMAL(10, 2)
+IN itinerary_id_value INT,
+IN influx_date_value DATE,
+IN no_visitors_value INT,
+IN revenue_value DECIMAL(10, 2)
 )
 BEGIN
 	
@@ -709,8 +709,8 @@ CALL add_influx(4, '2023-08-26', 7, 140.00);
 DROP PROCEDURE IF EXISTS delete_influx;
 DELIMITER //
 CREATE PROCEDURE delete_influx(
-itinerary_id_value INT,
-influx_date_value DATE
+IN itinerary_id_value INT,
+IN influx_date_value DATE
 )
 BEGIN
 
@@ -727,12 +727,12 @@ END//
 DROP PROCEDURE IF EXISTS add_staff;
 DELIMITER //
 CREATE PROCEDURE add_staff(
-staff_name_value VARCHAR(45),
-address_value VARCHAR(90),
-phone_value VARCHAR(45),
-hiring_date_value DATE,
-manager_value VARCHAR(45),
-staff_role_value VARCHAR(45)
+IN staff_name_value VARCHAR(45),
+IN address_value VARCHAR(90),
+IN phone_value VARCHAR(45),
+IN hiring_date_value DATE,
+IN manager_value VARCHAR(45),
+IN staff_role_value VARCHAR(45)
 )
 BEGIN
 	INSERT INTO staff(staff_name, address, phone, hiring_date, manager, staff_role)
@@ -756,8 +756,8 @@ CALL add_staff('Sammy Soe', '1278 Charles Babbage Street, Chicago, IL 67891', '(
 DROP PROCEDURE IF EXISTS delete_staff;
 DELIMITER //
 CREATE PROCEDURE delete_staff(
-staff_name_value VARCHAR(45),
-staff_role_value VARCHAR(45)
+IN staff_name_value VARCHAR(45),
+IN staff_role_value VARCHAR(45)
 )
 BEGIN
 	
@@ -784,14 +784,14 @@ END//
 DROP PROCEDURE IF EXISTS update_staff;
 DELIMITER //
 CREATE PROCEDURE update_staff(
-staff_name_value VARCHAR(45),
-staff_role_value VARCHAR(45),
-staff_name_new_value VARCHAR(45),
-address_new_value VARCHAR(90),
-phone_new_value VARCHAR(45),
-hiring_date_new_value DATE,
-manager_new_value VARCHAR(45),
-staff_role_new_value VARCHAR(45)
+IN staff_name_value VARCHAR(45),
+IN staff_role_value VARCHAR(45),
+IN staff_name_new_value VARCHAR(45),
+IN address_new_value VARCHAR(90),
+IN phone_new_value VARCHAR(45),
+IN hiring_date_new_value DATE,
+IN manager_new_value VARCHAR(45),
+IN staff_role_new_value VARCHAR(45)
 )
 BEGIN
 
@@ -816,3 +816,135 @@ BEGIN
     
 END//
 
+-- Stored procedure to Add Guides
+DROP PROCEDURE IF EXISTS add_guide;
+DELIMITER //
+CREATE PROCEDURE add_guide(
+IN staff_name_value VARCHAR(45),
+IN itinerary_id_value INT,
+IN guide_date_value DATE
+)
+BEGIN
+
+	DECLARE staff_id_value INT;
+    DECLARE guide_hour_value TIME;
+    
+    SELECT staff_id 
+    INTO staff_id_value
+    FROM staff
+    WHERE staff_name = staff_name_value AND
+    staff_role = "Guide";
+    
+    SELECT start_hour
+    INTO guide_hour_value
+    FROM itinerary
+    WHERE itinerary_id = itinerary_id_value;
+    
+    INSERT INTO guide(staff_id, itinerary_id, guide_date, guide_hour)
+    VALUES (staff_id_value, itinerary_id_value, guide_date_value, guide_hour_value);    
+    
+END//
+
+-- Adding data to the table guide
+CALL add_guide('John Doe', 1, '2023-07-01');
+CALL add_guide('Jane Doe', 2, '2023-07-01');
+CALL add_guide('Larry Loe', 3, '2023-07-01');
+CALL add_guide('John Doe', 4, '2023-07-01');
+CALL add_guide('John Doe', 1, '2023-07-08');
+CALL add_guide('Jane Doe', 2, '2023-07-08');
+CALL add_guide('Larry Loe', 3, '2023-07-08');
+CALL add_guide('Jane Doe', 4, '2023-07-08');
+CALL add_guide('John Doe', 1, '2023-07-15');
+CALL add_guide('Jane Doe', 2, '2023-07-15');
+CALL add_guide('Larry Loe', 3, '2023-07-15');
+CALL add_guide('Larry Loe', 4, '2023-07-15');
+CALL add_guide('John Doe', 1, '2023-07-22');
+CALL add_guide('Jane Doe', 2, '2023-07-22');
+CALL add_guide('Larry Loe', 3, '2023-07-22');
+CALL add_guide('John Doe', 4, '2023-07-22');
+CALL add_guide('John Doe', 1, '2023-07-29');
+CALL add_guide('Jane Doe', 2, '2023-07-29');
+CALL add_guide('Larry Loe', 3, '2023-07-29');
+CALL add_guide('Jane Doe', 4, '2023-07-29');
+
+CALL add_guide('John Doe', 1, '2023-08-05');
+CALL add_guide('Jane Doe', 2, '2023-08-05');
+CALL add_guide('Larry Loe', 3, '2023-08-05');
+CALL add_guide('John Doe', 4, '2023-08-05');
+CALL add_guide('John Doe', 1, '2023-08-12');
+CALL add_guide('Jane Doe', 2, '2023-08-12');
+CALL add_guide('Larry Loe', 3, '2023-08-12');
+CALL add_guide('Jane Doe', 4, '2023-08-12');
+CALL add_guide('John Doe', 1, '2023-08-19');
+CALL add_guide('Jane Doe', 2, '2023-08-19');
+CALL add_guide('Larry Loe', 3, '2023-08-19');
+CALL add_guide('Larry Loe', 4, '2023-08-19');
+CALL add_guide('John Doe', 1, '2023-08-26');
+CALL add_guide('Jane Doe', 2, '2023-08-26');
+CALL add_guide('Larry Loe', 3, '2023-08-26');
+CALL add_guide('John Doe', 4, '2023-08-26');
+
+-- Stored procedure to Delete Guides
+DROP PROCEDURE IF EXISTS delete_guide;
+DELIMITER //
+CREATE PROCEDURE delete_guide(
+IN staff_name_value VARCHAR(45),
+IN itinerary_id_value INT,
+IN guide_date_value DATE
+)
+BEGIN
+	
+    DECLARE staff_id_value INT;
+    
+    SELECT staff_id
+    INTO staff_id_value
+    FROM staff
+    WHERE staff_name = staff_name_value
+    AND staff_role = "Guide";
+    
+    SET FOREIGN_KEY_CHECKS = 0;
+    
+    DELETE FROM guide
+    WHERE staff_id = staff_id_value
+    AND itinerary_id = itinerary_id_value
+    AND guide_date = guide_date_value;
+    
+    SET FOREIGN_KEY_CHECKS = 1;
+	
+END//
+
+-- Stored procedure to Add Salary
+/*
+DROP PROCEDURE IF EXISTS add_salary;
+DELIMITER //
+CREATE PROCEDURE add_salary(
+IN staff_name_value VARCHAR(45),
+IN staff_role_value VARCHAR(45),
+IN salary_date_value DATE,
+IN base_salary_value DECIMAL(10, 2),
+IN extra_salary_value DECIMAL(10, 2)
+)
+BEGIN
+	DECLARE staff_id_value INT;       
+    DECLARE manager_extra_value DECIMAL(5,2);
+    DECLARE total_salary_value DECIMAL(5,2);
+          
+    SELECT staff_id
+    INTO staff_id_value
+    FROM staff
+    WHERE staff_name = staff_name_value AND 
+    staff_role = staff_role_value;
+    
+    SET manager_extra_value = IF(staff_role_value = "Manager" OR staff_role_value = "Director", 1000, 0);
+    
+    SET total_salary_value = base_salary_value + extra_salary_value + manager_extra_value
+    
+    -- Each manager earns extra $1000 
+    
+    INSERT INTO salary(salary_date, base_salary, extra_salary, manager_extra, total_salary, staff_id)
+    VALUES (salary_date_value, base_salary_value, extra_salary_value, manager_extra_value, total_salary_value, staff_id_value)
+    
+    SELECT CONCAT(staff_name_value, ' - ', salary_date_value, ' - ', total_salary_value) AS 'Added salary':
+    
+END//
+*/
