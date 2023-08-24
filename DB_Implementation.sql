@@ -153,7 +153,7 @@ FOREIGN KEY(itinerary_id) REFERENCES itinerary(itinerary_id)
 ON UPDATE CASCADE ON DELETE RESTRICT
 );
 
--- Caretakers
+-- Table Caretakers
 DROP TABLE IF EXISTS caretaker;
 CREATE TABLE caretaker(
 staff_id INT NOT NULL,
@@ -203,7 +203,7 @@ CALL add_species("Duck", "Anas platyrhynchos", "Dabbling duck with green head.")
 CALL add_species("Guinea pig", "Cavia porcellus", "Rodent belonging to the genus Cavia in the family Caviidae.");
 CALL add_species("Giant panda", "Ailuropoda melanoleuca", "Bear species endemic to China.");
 CALL add_species("Mexican wolf", "Canis lupus baileyi", "Subspecies of gray wolf native to southeastern United States, and northern Mexico.");
-CALL add_species("Teporingo ", "Romerolagus diazi", "Small rabbit that resides in the mountains of Mexico.");
+CALL add_species("Teporingo", "Romerolagus diazi", "Small rabbit that resides in the mountains of Mexico.");
 
 -- Stored Procedure to Delete Species
 DROP PROCEDURE IF EXISTS delete_species;
@@ -534,6 +534,7 @@ CALL add_cage('Ailuropoda melanoleuca', 'Tropical forest', 2);
 CALL add_cage('Canis lupus baileyi', 'Desert', 4);
 CALL add_cage('Romerolagus diazi', 'Temperate forest', 30);
 
+
 -- Store procedure to Delete Cages
 DROP PROCEDURE IF EXISTS delete_cage;
 DELIMITER //
@@ -842,7 +843,7 @@ BEGIN
     
     INSERT INTO guide(staff_id, itinerary_id, guide_date, guide_hour)
     VALUES (staff_id_value, itinerary_id_value, guide_date_value, guide_hour_value);    
-    
+           
 END//
 
 -- Adding data to the table guide
@@ -911,6 +912,122 @@ BEGIN
     
     SET FOREIGN_KEY_CHECKS = 1;
 	
+END//
+
+-- Stored procedure to Add Caretakers
+DROP PROCEDURE IF EXISTS add_caretaker;
+DELIMITER //
+CREATE PROCEDURE add_caretaker(
+staff_name_value VARCHAR(45),
+species_name_value VARCHAR(45),
+caretaker_date_value DATE
+)
+BEGIN
+	
+    DECLARE staff_id_value INT;
+    DECLARE species_id_value INT;
+    
+    SELECT staff_id
+    INTO staff_id_value
+    FROM staff
+    WHERE staff_name = staff_name_value
+    AND staff_role = "Caretaker";
+    
+	SELECT species_id
+    INTO species_id_value
+    FROM species
+    WHERE common_name = species_name_value;
+    
+    INSERT INTO caretaker(staff_id, species_id, caretaker_date)
+    VALUES (staff_id_value, species_id_value, caretaker_date_value);          
+
+END//
+
+-- Adding data to Caretaker table
+CALL add_caretaker('Grace Goe', 'Rabbit', '2023-07-01');
+CALL add_caretaker('Grace Goe', 'Duck', '2023-07-01');
+CALL add_caretaker('Grace Goe', 'Guinea pig', '2023-07-01');
+CALL add_caretaker('Harry Hoe', 'Giant panda', '2023-07-01');
+CALL add_caretaker('Harry Hoe', 'Mexican wolf', '2023-07-01');
+CALL add_caretaker('Harry Hoe', 'Teporingo', '2023-07-01');
+CALL add_caretaker('Carla Coe', 'Rabbit', '2023-07-08');
+CALL add_caretaker('Carla Coe', 'Duck', '2023-07-08');
+CALL add_caretaker('Carla Coe', 'Guinea pig', '2023-07-08');
+CALL add_caretaker('Harry Hoe', 'Giant panda', '2023-07-08');
+CALL add_caretaker('Harry Hoe', 'Mexican wolf', '2023-07-08');
+CALL add_caretaker('Harry Hoe', 'Teporingo', '2023-07-08');
+CALL add_caretaker('Carla Coe', 'Rabbit', '2023-07-15');
+CALL add_caretaker('Carla Coe', 'Duck', '2023-07-15');
+CALL add_caretaker('Carla Coe', 'Guinea pig', '2023-07-15');
+CALL add_caretaker('Grace Goe', 'Giant panda', '2023-07-15');
+CALL add_caretaker('Grace Goe', 'Mexican wolf', '2023-07-15');
+CALL add_caretaker('Grace Goe', 'Teporingo', '2023-07-15');
+CALL add_caretaker('Carla Coe', 'Rabbit', '2023-07-22');
+CALL add_caretaker('Carla Coe', 'Duck', '2023-07-22');
+CALL add_caretaker('Carla Coe', 'Guinea pig', '2023-07-22');
+CALL add_caretaker('Harry Hoe', 'Giant panda', '2023-07-22');
+CALL add_caretaker('Harry Hoe', 'Mexican wolf', '2023-07-22');
+CALL add_caretaker('Harry Hoe', 'Teporingo', '2023-07-22');
+CALL add_caretaker('Grace Goe', 'Rabbit', '2023-07-29');
+CALL add_caretaker('Grace Goe', 'Duck', '2023-07-29');
+CALL add_caretaker('Grace Goe', 'Guinea pig', '2023-07-29');
+CALL add_caretaker('Harry Hoe', 'Giant panda', '2023-07-29');
+CALL add_caretaker('Harry Hoe', 'Mexican wolf', '2023-07-29');
+CALL add_caretaker('Harry Hoe', 'Teporingo', '2023-07-29');
+
+CALL add_caretaker('Grace Goe', 'Rabbit', '2023-08-05');
+CALL add_caretaker('Grace Goe', 'Duck', '2023-08-05');
+CALL add_caretaker('Grace Goe', 'Guinea pig', '2023-08-05');
+CALL add_caretaker('Harry Hoe', 'Giant panda', '2023-08-05');
+CALL add_caretaker('Harry Hoe', 'Mexican wolf', '2023-08-05');
+CALL add_caretaker('Harry Hoe', 'Teporingo', '2023-08-05');
+CALL add_caretaker('Carla Coe', 'Rabbit', '2023-08-12');
+CALL add_caretaker('Carla Coe', 'Duck', '2023-08-12');
+CALL add_caretaker('Carla Coe', 'Guinea pig', '2023-08-12');
+CALL add_caretaker('Harry Hoe', 'Giant panda', '2023-08-12');
+CALL add_caretaker('Harry Hoe', 'Mexican wolf', '2023-08-12');
+CALL add_caretaker('Harry Hoe', 'Teporingo', '2023-08-12');
+CALL add_caretaker('Carla Coe', 'Rabbit', '2023-08-19');
+CALL add_caretaker('Carla Coe', 'Duck', '2023-08-19');
+CALL add_caretaker('Carla Coe', 'Guinea pig', '2023-08-19');
+CALL add_caretaker('Grace Goe', 'Giant panda', '2023-08-19');
+CALL add_caretaker('Grace Goe', 'Mexican wolf', '2023-08-19');
+CALL add_caretaker('Grace Goe', 'Teporingo', '2023-08-19');
+CALL add_caretaker('Carla Coe', 'Rabbit', '2023-08-26');
+CALL add_caretaker('Carla Coe', 'Duck', '2023-08-26');
+CALL add_caretaker('Carla Coe', 'Guinea pig', '2023-08-26');
+CALL add_caretaker('Harry Hoe', 'Giant panda', '2023-08-26');
+CALL add_caretaker('Harry Hoe', 'Mexican wolf', '2023-08-26');
+CALL add_caretaker('Harry Hoe', 'Teporingo', '2023-08-26');
+
+-- Stored procedure to Delete Caretaker
+DROP PROCEDURE IF EXISTS delete_caretaker;
+DELIMITER //
+CREATE PROCEDURE delete_caretaker(
+staff_name_value VARCHAR(45),
+species_name_value VARCHAR(45),
+caretaker_date_value DATE
+)
+BEGIN
+    DECLARE staff_id_value INT;
+    DECLARE species_id_value INT;
+    
+    SELECT staff_id
+    INTO staff_id_value
+    FROM staff
+    WHERE staff_name = staff_name_value
+    AND staff_role = "Caretaker";
+    
+	SELECT species_id
+    INTO species_id_value
+    FROM species
+    WHERE common_name = species_name_value;
+    
+    DELETE FROM caretaker
+    WHERE staff_id = staff_id_value
+    AND species_id = species_id_value
+    AND caretaker_date = caretaker_date_value;
+
 END//
 
 -- Stored procedure to Add Salary
