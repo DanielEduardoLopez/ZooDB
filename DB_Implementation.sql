@@ -1030,6 +1030,50 @@ BEGIN
 
 END//
 
+-- Stored procedure to calculate Extra Salary
+DROP PROCEDURE IF EXISTS calculate_extra_salary;
+DELIMITER //
+CREATE PROCEDURE calculate_extra_salary(
+IN month_value INT
+)
+BEGIN
+
+	SELECT g.staff_id AS 'Staff', COUNT(g.guide_date) AS 'Itineraries', SUM(x.revenue) * 0.1 AS 'Extra Salary'
+	FROM guide g
+	INNER JOIN itinerary i
+	ON g.itinerary_id = i.itinerary_id
+	INNER JOIN influx x
+	ON i.itinerary_id = x.itinerary_id
+	AND g.guide_date = x.influx_date
+	WHERE MONTH(g.guide_date) = 7
+	GROUP BY g.staff_id;
+    
+    SELECT c.staff_id AS 'Staff', COUNT(c.caretaker_date) AS 'Itineraries', SUM(x.revenue) * 0.2 AS 'Extra Salary'
+	FROM caretaker c
+	INNER JOIN species s
+	ON c.species_id = s.species_id
+	INNER JOIN cage g
+	ON s.species_id = g.species_id
+	INNER JOIN zone z
+	ON g.zone_id = z.zone_id
+	INNER JOIN route r
+	ON z.zone_id = r.zone_id
+	INNER JOIN itinerary i
+	ON r.itinerary_id = i.itinerary_id
+	INNER JOIN influx x
+	ON i.itinerary_id = x.itinerary_id
+	AND c.caretaker_date = x.influx_date
+	WHERE MONTH(c.caretaker_date) = 7
+	GROUP BY c.staff_id;
+    	
+	
+END//
+
+
+
+
+
+
 -- Stored procedure to Add Salary
 /*
 DROP PROCEDURE IF EXISTS add_salary;
@@ -1045,6 +1089,7 @@ BEGIN
 	DECLARE staff_id_value INT;       
     DECLARE manager_extra_value DECIMAL(5,2);
     DECLARE total_salary_value DECIMAL(5,2);
+    DECLARE base_salary_value DECIMAL(5,2);
           
     SELECT staff_id
     INTO staff_id_value
@@ -1052,11 +1097,18 @@ BEGIN
     WHERE staff_name = staff_name_value AND 
     staff_role = staff_role_value;
     
+    -- Each employee has a base salary of $4000 
+    SET base_salary_value = 4000
+    
+    -- Each manager earns extra $1000 
     SET manager_extra_value = IF(staff_role_value = "Manager" OR staff_role_value = "Director", 1000, 0);
+    
+    -- Calling calculate_extra_salary procedure to calculate extra salary
+    SET extra_salary_value = CALL calculate_extra_salary()
     
     SET total_salary_value = base_salary_value + extra_salary_value + manager_extra_value
     
-    -- Each manager earns extra $1000 
+    
     
     INSERT INTO salary(salary_date, base_salary, extra_salary, manager_extra, total_salary, staff_id)
     VALUES (salary_date_value, base_salary_value, extra_salary_value, manager_extra_value, total_salary_value, staff_id_value)
