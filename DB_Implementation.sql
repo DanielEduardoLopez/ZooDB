@@ -1031,6 +1031,7 @@ BEGIN
 END//
 
 -- Stored procedure to calculate Extra Salary
+/*
 DROP PROCEDURE IF EXISTS calculate_extra_salary;
 DELIMITER //
 CREATE PROCEDURE calculate_extra_salary(
@@ -1068,14 +1069,10 @@ BEGIN
     	
 	
 END//
-
-
-
-
+*/
 
 
 -- Stored procedure to Add Salary
-/*
 DROP PROCEDURE IF EXISTS add_salary;
 DELIMITER //
 CREATE PROCEDURE add_salary(
@@ -1083,13 +1080,14 @@ IN staff_name_value VARCHAR(45),
 IN staff_role_value VARCHAR(45),
 IN salary_date_value DATE,
 IN base_salary_value DECIMAL(10, 2),
-IN extra_salary_value DECIMAL(10, 2)
+IN month_value INT
 )
 BEGIN
 	DECLARE staff_id_value INT;       
-    DECLARE manager_extra_value DECIMAL(5,2);
-    DECLARE total_salary_value DECIMAL(5,2);
     DECLARE base_salary_value DECIMAL(5,2);
+    DECLARE extra_salary_value DECIMAL(5,2);
+	DECLARE manager_extra_value DECIMAL(5,2);
+	DECLARE total_salary_value DECIMAL(5,2);
           
     SELECT staff_id
     INTO staff_id_value
@@ -1098,22 +1096,56 @@ BEGIN
     staff_role = staff_role_value;
     
     -- Each employee has a base salary of $4000 
-    SET base_salary_value = 4000
+    SET base_salary_value = 4000;  
+  
+    -- Calculating extra salary for either a a guide or a caretaker
+    IF staff_role_value = "Guide" THEN
+		SELECT SUM(x.revenue) * 0.1 AS 'Extra Salary'
+		INTO extra_salary_value
+		FROM guide g
+		INNER JOIN itinerary i
+		ON g.itinerary_id = i.itinerary_id
+		INNER JOIN influx x
+		ON i.itinerary_id = x.itinerary_id
+		AND g.guide_date = x.influx_date
+		WHERE MONTH(g.guide_date) = month_value
+		GROUP BY g.staff_id
+		HAVING g.staff_id = staff_id_value;
+    END IF;
+    
+    IF staff_role_value = "Caretaker" THEN   
+		SELECT SUM(x.revenue) * 0.2 AS 'Extra Salary'
+        INTO extra_salary_value
+		FROM caretaker c
+		INNER JOIN species s
+		ON c.species_id = s.species_id
+		INNER JOIN cage g
+		ON s.species_id = g.species_id
+		INNER JOIN zone z
+		ON g.zone_id = z.zone_id
+		INNER JOIN route r
+		ON z.zone_id = r.zone_id
+		INNER JOIN itinerary i
+		ON r.itinerary_id = i.itinerary_id
+		INNER JOIN influx x
+		ON i.itinerary_id = x.itinerary_id
+		AND c.caretaker_date = x.influx_date
+		WHERE MONTH(c.caretaker_date) = month_value
+		GROUP BY c.staff_id
+		HAVING g.staff_id = staff_id_value;
+    END IF;
     
     -- Each manager earns extra $1000 
     SET manager_extra_value = IF(staff_role_value = "Manager" OR staff_role_value = "Director", 1000, 0);
     
-    -- Calling calculate_extra_salary procedure to calculate extra salary
-    SET extra_salary_value = CALL calculate_extra_salary()
+    -- Calculating total salary
+    SET total_salary_value = base_salary_value + extra_salary_value + manager_extra_value;     
     
-    SET total_salary_value = base_salary_value + extra_salary_value + manager_extra_value
-    
-    
-    
+    -- Inserting values into the salary table
     INSERT INTO salary(salary_date, base_salary, extra_salary, manager_extra, total_salary, staff_id)
-    VALUES (salary_date_value, base_salary_value, extra_salary_value, manager_extra_value, total_salary_value, staff_id_value)
+    VALUES (salary_date_value, base_salary_value, extra_salary_value, manager_extra_value, total_salary_value, staff_id_value);
     
-    SELECT CONCAT(staff_name_value, ' - ', salary_date_value, ' - ', total_salary_value) AS 'Added salary':
+    -- Displaying summary of results
+    SELECT CONCAT(staff_name_value, ' - ', salary_date_value, ' - ', total_salary_value) AS 'Added salary';
     
 END//
-*/
