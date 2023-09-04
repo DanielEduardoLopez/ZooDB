@@ -1149,3 +1149,30 @@ BEGIN
     SELECT CONCAT(staff_name_value, ' - ', salary_date_value, ' - ', total_salary_value) AS 'Added salary';
     
 END//
+
+
+-- Stored procedure to Delete Salary
+DROP PROCEDURE IF EXISTS add_salary;
+DELIMITER //
+CREATE PROCEDURE add_salary(
+IN staff_name_value VARCHAR(45),
+IN staff_role_value VARCHAR(45),
+IN salary_date_value DATE
+)
+BEGIN
+
+	DECLARE staff_id_value INT;
+    
+	SELECT staff_id
+    INTO staff_id_value
+    FROM staff
+    WHERE staff_name = staff_name_value AND 
+    staff_role = staff_role_value;
+    
+    DELETE FROM salary
+    WHERE staff_id = staff_id_value
+    AND salary_date = salary_date_value;
+    
+    SELECT CONCAT(staff_name_value, ' - ', salary_date_value) AS 'Deleted salary';
+
+END//
