@@ -918,9 +918,9 @@ END//
 DROP PROCEDURE IF EXISTS add_caretaker;
 DELIMITER //
 CREATE PROCEDURE add_caretaker(
-staff_name_value VARCHAR(45),
-species_name_value VARCHAR(45),
-caretaker_date_value DATE
+IN staff_name_value VARCHAR(45),
+IN species_name_value VARCHAR(45),
+IN caretaker_date_value DATE
 )
 BEGIN
 	
@@ -1004,9 +1004,9 @@ CALL add_caretaker('Harry Hoe', 'Teporingo', '2023-08-26');
 DROP PROCEDURE IF EXISTS delete_caretaker;
 DELIMITER //
 CREATE PROCEDURE delete_caretaker(
-staff_name_value VARCHAR(45),
-species_name_value VARCHAR(45),
-caretaker_date_value DATE
+IN staff_name_value VARCHAR(45),
+IN species_name_value VARCHAR(45),
+IN caretaker_date_value DATE
 )
 BEGIN
     DECLARE staff_id_value INT;
@@ -1029,48 +1029,6 @@ BEGIN
     AND caretaker_date = caretaker_date_value;
 
 END//
-
--- Stored procedure to calculate Extra Salary
-/*
-DROP PROCEDURE IF EXISTS calculate_extra_salary;
-DELIMITER //
-CREATE PROCEDURE calculate_extra_salary(
-IN month_value INT
-)
-BEGIN
-
-	SELECT g.staff_id AS 'Staff', COUNT(g.guide_date) AS 'Itineraries', SUM(x.revenue) * 0.1 AS 'Extra Salary'
-	FROM guide g
-	INNER JOIN itinerary i
-	ON g.itinerary_id = i.itinerary_id
-	INNER JOIN influx x
-	ON i.itinerary_id = x.itinerary_id
-	AND g.guide_date = x.influx_date
-	WHERE MONTH(g.guide_date) = 7
-	GROUP BY g.staff_id;
-    
-    SELECT c.staff_id AS 'Staff', COUNT(c.caretaker_date) AS 'Itineraries', SUM(x.revenue) * 0.2 AS 'Extra Salary'
-	FROM caretaker c
-	INNER JOIN species s
-	ON c.species_id = s.species_id
-	INNER JOIN cage g
-	ON s.species_id = g.species_id
-	INNER JOIN zone z
-	ON g.zone_id = z.zone_id
-	INNER JOIN route r
-	ON z.zone_id = r.zone_id
-	INNER JOIN itinerary i
-	ON r.itinerary_id = i.itinerary_id
-	INNER JOIN influx x
-	ON i.itinerary_id = x.itinerary_id
-	AND c.caretaker_date = x.influx_date
-	WHERE MONTH(c.caretaker_date) = 7
-	GROUP BY c.staff_id;
-    	
-	
-END//
-*/
-
 
 -- Stored procedure to Add Salary
 DROP PROCEDURE IF EXISTS add_salary;
