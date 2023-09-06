@@ -1037,15 +1037,14 @@ CREATE PROCEDURE add_salary(
 IN staff_name_value VARCHAR(45),
 IN staff_role_value VARCHAR(45),
 IN salary_date_value DATE,
-IN base_salary_value DECIMAL(10, 2),
 IN month_value INT
 )
 BEGIN
 	DECLARE staff_id_value INT;       
-    DECLARE base_salary_value DECIMAL(5,2);
-    DECLARE extra_salary_value DECIMAL(5,2);
-	DECLARE manager_extra_value DECIMAL(5,2);
-	DECLARE total_salary_value DECIMAL(5,2);
+    DECLARE base_salary_value DECIMAL(10,2);
+    DECLARE extra_salary_value DECIMAL(10,2);
+	DECLARE manager_extra_value DECIMAL(10,2);
+	DECLARE total_salary_value DECIMAL(10,2);
           
     SELECT staff_id
     INTO staff_id_value
@@ -1090,8 +1089,12 @@ BEGIN
 		AND c.caretaker_date = x.influx_date
 		WHERE MONTH(c.caretaker_date) = month_value
 		GROUP BY c.staff_id
-		HAVING g.staff_id = staff_id_value;
+		HAVING c.staff_id = staff_id_value;
     END IF;
+    
+    IF staff_role_value = "Manager" OR staff_role_value = "Director" THEN 
+		SET extra_salary_value = 0;
+	END IF;
     
     -- Each manager earns extra $1000 
     SET manager_extra_value = IF(staff_role_value = "Manager" OR staff_role_value = "Director", 1000, 0);
@@ -1104,15 +1107,35 @@ BEGIN
     VALUES (salary_date_value, base_salary_value, extra_salary_value, manager_extra_value, total_salary_value, staff_id_value);
     
     -- Displaying summary of results
-    SELECT CONCAT(staff_name_value, ' - ', salary_date_value, ' - ', total_salary_value) AS 'Added salary';
+    SELECT CONCAT(staff_name_value, ' - ', salary_date_value, ' - Extra Salary: ', extra_salary_value, ' - Total Salary: ', total_salary_value) AS 'Added salary';
     
 END//
 
+-- Adding data to the Salary table
+CALL add_salary('John Doe', 'Guide', '2023-08-01', 7);
+CALL add_salary('Jane Doe', 'Guide', '2023-08-01', 7);
+CALL add_salary('Larry Loe', 'Guide', '2023-08-01', 7);
+CALL add_salary('Grace Goe', 'Caretaker', '2023-08-01', 7);
+CALL add_salary('Harry Hoe', 'Caretaker', '2023-08-01', 7);
+CALL add_salary('Carla Coe', 'Caretaker', '2023-08-01', 7);
+CALL add_salary('Rita Roe', 'Manager', '2023-08-01', 7);
+CALL add_salary('Frank Foe', 'Manager', '2023-08-01', 7);
+CALL add_salary('Sammy Soe', 'Director', '2023-08-01', 7);
+
+CALL add_salary('John Doe', 'Guide', '2023-09-01', 8);
+CALL add_salary('Jane Doe', 'Guide', '2023-09-01', 8);
+CALL add_salary('Larry Loe', 'Guide', '2023-09-01', 8);
+CALL add_salary('Grace Goe', 'Caretaker', '2023-09-01', 8);
+CALL add_salary('Harry Hoe', 'Caretaker', '2023-09-01', 8);
+CALL add_salary('Carla Coe', 'Caretaker', '2023-09-01', 8);
+CALL add_salary('Rita Roe', 'Manager', '2023-09-01', 8);
+CALL add_salary('Frank Foe', 'Manager', '2023-09-01', 8);
+CALL add_salary('Sammy Soe', 'Director', '2023-09-01', 8);
 
 -- Stored procedure to Delete Salary
-DROP PROCEDURE IF EXISTS add_salary;
+DROP PROCEDURE IF EXISTS delete_salary;
 DELIMITER //
-CREATE PROCEDURE add_salary(
+CREATE PROCEDURE delete_salary(
 IN staff_name_value VARCHAR(45),
 IN staff_role_value VARCHAR(45),
 IN salary_date_value DATE
