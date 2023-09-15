@@ -21,7 +21,7 @@ ON  c.species_id = s.species_id
 GROUP BY z.zone_name;
 
 -- 2. Visitors per specific day, itinerary and revenue by itinerary
-SELECT SUM(no_visitors) AS "Visitors Number", SUM(revenue) AS "Revenue" 
+SELECT influx_date AS "Date", itinerary_id AS "Itinerary", SUM(no_visitors) AS "Visitors Number", SUM(revenue) AS "Revenue" 
 FROM influx 
 GROUP BY influx_date, itinerary_id
 ORDER BY influx_date DESC;
