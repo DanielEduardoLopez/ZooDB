@@ -25,3 +25,22 @@ SELECT influx_date AS "Date", itinerary_id AS "Itinerary", SUM(no_visitors) AS "
 FROM influx 
 GROUP BY influx_date, itinerary_id
 ORDER BY influx_date DESC;
+
+-- 3. Salary paid to each guide, showing the date, and amount earned per itinerary.
+SELECT DISTINCT
+s.staff_name AS "Guide name", 
+i.itinerary_id AS "Itinerary",
+f.influx_date AS "Itinerary date",
+f.revenue * 0.1 AS "Extra amount per itinerary"
+FROM staff s
+LEFT JOIN guide g
+ON s.staff_id = g.staff_id
+LEFT JOIN itinerary i
+ON g.itinerary_id = i.itinerary_id
+LEFT JOIN influx f
+ON i.itinerary_id = f.itinerary_id
+INNER JOIN salary l
+ON s.staff_id = l.staff_id
+WHERE s.staff_role = "Guide"
+ORDER BY "Guide name";
+
