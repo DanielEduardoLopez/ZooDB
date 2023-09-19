@@ -44,3 +44,28 @@ ON s.staff_id = l.staff_id
 WHERE s.staff_role = "Guide"
 ORDER BY "Guide name";
 
+-- 4. Salary paid to each caretaker, showing the date, amount earned per itinerary that corresponds to their area
+SELECT DISTINCT
+s.staff_name AS "Caretaker name", 
+i.itinerary_id AS "Itinerary",
+c.caretaker_date AS "Date",
+f.revenue * 0.2 AS "Extra amount per itinerary and zone"
+FROM staff s
+INNER JOIN caretaker c
+ON s.staff_id = c.staff_id
+INNER JOIN species p
+ON c.species_id = p.species_id
+INNER JOIN cage g
+ON p.species_id = g.species_id
+INNER JOIN zone z
+ON g.zone_id = z.zone_id
+INNER JOIN route r
+ON z.zone_id = r.zone_id
+INNER JOIN itinerary i
+ON r.itinerary_id = i.itinerary_id
+INNER JOIN influx f
+ON i.itinerary_id = f.itinerary_id
+INNER JOIN salary l
+ON s.staff_id = l.staff_id
+WHERE s.staff_role = "Caretaker"
+ORDER BY "Caretaker name";
