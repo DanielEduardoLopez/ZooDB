@@ -77,3 +77,18 @@ INNER JOIN salary l
 ON s.staff_id = l.staff_id
 GROUP BY s.staff_role
 ORDER BY AVG(l.total_salary) DESC;
+
+-- "Aguinaldo" (Bonus) that must be paid for the current year to each employee
+SELECT DISTINCT
+s.staff_name AS "Person", 
+DATEDIFF(CURDATE(), s.hiring_date) / 365 AS "Worked Years", 
+IF(
+	DATEDIFF(DATE_ADD(MAKEDATE(YEAR(CURDATE()), 31), INTERVAL (12)-1 MONTH), s.hiring_date) / 365 < 1.0, 
+	(DATEDIFF(DATE_ADD(MAKEDATE(YEAR(CURDATE()), 31), INTERVAL (12)-1 MONTH), s.hiring_date) / 365) * ( l.base_salary / 30 ) * 5,
+	((DATEDIFF(DATE_ADD(MAKEDATE(YEAR(CURDATE()), 31), INTERVAL (12)-1 MONTH), s.hiring_date) DIV 365) * 2 + 5) * ( l.base_salary / 30 )
+) AS "Aguinaldo"
+FROM staff s
+INNER JOIN salary l
+ON s.staff_id = l.staff_id;
+
+
