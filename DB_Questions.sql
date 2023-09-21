@@ -69,3 +69,11 @@ INNER JOIN salary l
 ON s.staff_id = l.staff_id
 WHERE s.staff_role = "Caretaker"
 ORDER BY "Caretaker name";
+
+-- 5. Average salary paid to employees according to their position
+SELECT s.staff_role AS "Position", AVG(l.total_salary) AS "Average Salary"
+FROM staff s
+INNER JOIN salary l
+ON s.staff_id = l.staff_id
+GROUP BY s.staff_role
+ORDER BY AVG(l.total_salary) DESC;
