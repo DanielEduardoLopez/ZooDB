@@ -78,7 +78,7 @@ ON s.staff_id = l.staff_id
 GROUP BY s.staff_role
 ORDER BY AVG(l.total_salary) DESC;
 
--- "Aguinaldo" (Bonus) that must be paid for the current year to each employee
+-- 6. "Aguinaldo" (Bonus) that must be paid for the current year to each employee
 SELECT DISTINCT
 s.staff_name AS "Person", 
 DATEDIFF(CURDATE(), s.hiring_date) / 365 AS "Worked Years", 
@@ -90,5 +90,19 @@ IF(
 FROM staff s
 INNER JOIN salary l
 ON s.staff_id = l.staff_id;
+
+-- 7. Visits made to each zone per day (by specific date)
+SELECT z.zone_name AS "Zone", f.influx_date AS "Date", SUM(f.no_visitors) AS "Visits"
+FROM zone z
+INNER JOIN route r
+ON z.zone_id = r.zone_id
+INNER JOIN itinerary i
+ON r.itinerary_id = i.itinerary_id
+INNER JOIN influx f
+ON i.itinerary_id = f.itinerary_id
+GROUP BY z.zone_name, f.influx_date;
+
+
+
 
 
