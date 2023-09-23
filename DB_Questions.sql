@@ -102,6 +102,26 @@ INNER JOIN influx f
 ON i.itinerary_id = f.itinerary_id
 GROUP BY z.zone_name, f.influx_date;
 
+-- 8. Information on each species also showing the name of the caretaker in charge, the list of cages and number of occupants, and the areas where they are located.
+SELECT DISTINCT
+p.common_name AS "Name", 
+p.scientific_name AS "Scientific Name",
+p.general_description AS "Description",
+s.staff_name AS "Caretaker",
+g.cage_id AS "Cage Number",
+g.occupants AS "Occupants",
+z.zone_name AS "Zone"
+FROM species p
+INNER JOIN caretaker c
+ON p.species_id = c.species_id
+INNER JOIN staff s
+ON c.staff_id = s.staff_id
+INNER JOIN cage g
+ON p.species_id = g.species_id
+INNER JOIN zone z
+ON g.zone_id = z.zone_id;
+
+
 
 
 
