@@ -126,7 +126,7 @@ FOREIGN KEY(itinerary_id) REFERENCES itinerary(itinerary_id)
 ON UPDATE CASCADE ON DELETE RESTRICT
 );
 
--- Table Employees
+-- Table Staff
 DROP TABLE IF EXISTS staff;
 CREATE TABLE staff(
 staff_id INT NOT NULL AUTO_INCREMENT,
@@ -180,7 +180,7 @@ FOREIGN KEY(staff_id) REFERENCES staff(staff_id)
 ON UPDATE CASCADE ON DELETE CASCADE
 );
 
--- STORES PROCEDURES
+-- STORED PROCEDURES
 -- Stored Procedure to Add Species
 DROP PROCEDURE IF EXISTS add_species;
 DELIMITER //
@@ -913,3 +913,52 @@ BEGIN
     SELECT CONCAT(staff_name_value, ' - ', salary_date_value) AS 'Deleted salary';
 
 END//
+
+
+-- FUNCTIONS
+
+-- "Aguinaldo" (Bonus) that must be paid for the current year to each employe
+DROP FUNCTION IF EXISTS calculate_aguinaldo;
+DELIMITER //
+CREATE FUNCTION calculate_aguinaldo(
+staff_name_value VARCHAR(45),
+staff_role_value VARCHAR(45)
+)
+RETURNS DECIMAL(10,2)
+BEGIN
+	
+	DECLARE staff_id_value INT;
+	DECLARE hiring_date_value DATE;
+	DECLARE base_salary_value DECIMAL(10,2);
+	DECLARE worked_years DECIMAL(10,2);
+	DECLARE aguinaldo DECIMAL(10,2);
+    
+	SELECT staff_id
+   INTO staff_id_value
+   FROM staff
+   WHERE staff_name = staff_name_value AND 
+   staff_role = staff_role_value;
+   
+   SELECT hiring_date
+   INTO hiring_date_value
+   FROM staff
+   WHERE staff_id = staff_id_value;
+   
+   SELECT base_salary
+   INTO base_salary_value
+   FROM salary
+   WHERE staff_id = staff_id_value;
+   
+   SET worked_years = DATEDIFF(CURDATE(), hiring_date_value) / 365;
+   
+   SET aguinaldo = IF(
+		DATEDIFF(DATE_ADD(MAKEDATE(YEAR(CURDATE()), 31), INTERVAL (12)-1 MONTH), hiring_date_value) / 365 < 1.0, 
+		(DATEDIFF(DATE_ADD(MAKEDATE(YEAR(CURDATE()), 31), INTERVAL (12)-1 MONTH), hiring_date_value) / 365) * ( base_salary_value / 30 ) * 5,
+		((DATEDIFF(DATE_ADD(MAKEDATE(YEAR(CURDATE()), 31), INTERVAL (12)-1 MONTH), hiring_date_value) DIV 365) * 2 + 5) * ( base_salary_value / 30 )
+	);
+
+   RETURN aguinaldo;
+
+END//
+
+SELECT calculate_aguinaldo("John Doe", "Guide");
