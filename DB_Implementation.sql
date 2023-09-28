@@ -946,19 +946,17 @@ BEGIN
    
    SELECT base_salary
    INTO base_salary_value
-   FROM salary
-   WHERE staff_id = staff_id_value;
+   FROM (SELECT staff_id, MAX(salary_date), base_salary FROM salary GROUP BY staff_id) AS current_salaries
+   WHERE staff_id = 4;
    
-   SET worked_years = DATEDIFF(CURDATE(), hiring_date_value) / 365;
+   SET worked_years = DATEDIFF(CURDATE(), hiring_date_value)/ 365;    
    
    SET aguinaldo = IF(
 		DATEDIFF(DATE_ADD(MAKEDATE(YEAR(CURDATE()), 31), INTERVAL (12)-1 MONTH), hiring_date_value) / 365 < 1.0, 
 		(DATEDIFF(DATE_ADD(MAKEDATE(YEAR(CURDATE()), 31), INTERVAL (12)-1 MONTH), hiring_date_value) / 365) * ( base_salary_value / 30 ) * 5,
 		((DATEDIFF(DATE_ADD(MAKEDATE(YEAR(CURDATE()), 31), INTERVAL (12)-1 MONTH), hiring_date_value) DIV 365) * 2 + 5) * ( base_salary_value / 30 )
-	);
-
+	);	
+	
    RETURN aguinaldo;
 
 END//
-
-SELECT calculate_aguinaldo("John Doe", "Guide");
