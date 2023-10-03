@@ -964,8 +964,8 @@ END//
 
 -- VIEWS
 -- 1. Species by zone in the zoo
-DROP VIEW IF EXISTS Species_by_zone;
-CREATE VIEW Species_by_zone AS
+DROP VIEW IF EXISTS species_by_zone;
+CREATE VIEW species_by_zone AS
 SELECT z.zone_name, COUNT(s.species_id) AS "Number of Species"
 FROM zone z
 INNER JOIN cage c
@@ -974,4 +974,10 @@ INNER JOIN species s
 ON  c.species_id = s.species_id
 GROUP BY z.zone_name;
 
-SELECT * FROM Species_by_zone;
+-- 2. Visitors per specific day, itinerary and revenue by itinerary
+DROP VIEW IF EXISTS visitor_details;
+CREATE VIEW visitor_details AS
+SELECT influx_date AS "Date", itinerary_id AS "Itinerary", SUM(no_visitors) AS "Visitors Number", SUM(revenue) AS "Revenue" 
+FROM influx 
+GROUP BY influx_date, itinerary_id
+ORDER BY influx_date DESC;
