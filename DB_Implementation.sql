@@ -1029,3 +1029,14 @@ INNER JOIN salary l
 ON s.staff_id = l.staff_id
 WHERE s.staff_role = "Caretaker"
 ORDER BY s.staff_name;
+
+-- 5. Average salary by employee
+DROP VIEW IF EXISTS salary_by_employee;
+CREATE VIEW salary_by_employee AS 
+SELECT s.staff_role AS "Position", AVG(l.total_salary) AS "Average Salary"
+FROM staff s
+INNER JOIN salary l
+ON s.staff_id = l.staff_id
+GROUP BY s.staff_role
+ORDER BY AVG(l.total_salary) DESC;
+
