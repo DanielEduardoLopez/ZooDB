@@ -947,7 +947,7 @@ BEGIN
    SELECT base_salary
    INTO base_salary_value
    FROM (SELECT staff_id, MAX(salary_date), base_salary FROM salary GROUP BY staff_id) AS current_salaries
-   WHERE staff_id = 4;
+   WHERE staff_id = staff_id_value;
    
    SET worked_years = DATEDIFF(CURDATE(), hiring_date_value)/ 365;    
    
@@ -1039,4 +1039,10 @@ INNER JOIN salary l
 ON s.staff_id = l.staff_id
 GROUP BY s.staff_role
 ORDER BY AVG(l.total_salary) DESC;
+
+-- 6. Aguinaldo by employee
+DROP VIEW IF EXISTS aguinaldo_by_employee;
+CREATE VIEW aguinaldo_by_employee AS
+SELECT s.staff_name AS "Person", calculate_aguinaldo(s.staff_name, s.staff_role) AS "Aguinaldo"
+FROM staff s;
 
