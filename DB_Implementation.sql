@@ -1046,3 +1046,15 @@ CREATE VIEW aguinaldo_by_employee AS
 SELECT s.staff_name AS "Person", calculate_aguinaldo(s.staff_name, s.staff_role) AS "Aguinaldo"
 FROM staff s;
 
+-- 7. Visits by zone
+DROP VIEW IF EXISTS visits_by_zone;
+CREATE VIEW visits_by_zone AS
+SELECT z.zone_name AS "Zone", f.influx_date AS "Date", SUM(f.no_visitors) AS "Visits"
+FROM zone z
+INNER JOIN route r
+ON z.zone_id = r.zone_id
+INNER JOIN itinerary i
+ON r.itinerary_id = i.itinerary_id
+INNER JOIN influx f
+ON i.itinerary_id = f.itinerary_id
+GROUP BY z.zone_name, f.influx_date;
