@@ -1079,3 +1079,24 @@ INNER JOIN cage g
 ON p.species_id = g.species_id
 INNER JOIN zone z
 ON g.zone_id = z.zone_id;
+
+-- 9. Guide details
+DROP VIEW IF EXISTS guide_details;
+CREATE VIEW guide_details AS
+SELECT DISTINCT
+s.staff_name AS "Guide", 
+z.zone_name AS "Zone", 
+i.itinerary_id AS "Itinerary",
+f.no_visitors AS "Visitors",
+f.influx_date AS "Date"
+FROM staff s
+INNER JOIN guide g
+ON s.staff_id = g.staff_id 
+INNER JOIN itinerary i
+ON g.itinerary_id = i.itinerary_id
+INNER JOIN influx f
+ON i.itinerary_id = f.itinerary_id
+INNER JOIN route r
+ON i.itinerary_id = r.itinerary_id
+INNER JOIN zone z
+ON r.zone_id = z.zone_id;
