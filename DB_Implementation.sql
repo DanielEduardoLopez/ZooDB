@@ -23,6 +23,16 @@ general_description VARCHAR(100),
 PRIMARY KEY (species_id)
 );
 
+-- Table Historic Species
+DROP TABLE IF EXISTS historic_species;
+CREATE TABLE historic_species(
+species_id INT NOT NULL AUTO_INCREMENT,
+common_name VARCHAR(45),
+scientific_name VARCHAR(45),
+general_description VARCHAR(100),
+PRIMARY KEY (species_id)
+);
+
 -- Table Habitat
 DROP TABLE IF EXISTS habitat;
 CREATE TABLE habitat(
@@ -135,6 +145,19 @@ address VARCHAR(90),
 phone VARCHAR(45),
 hiring_date DATE,
 manager VARCHAR(45),
+staff_role VARCHAR(45),
+PRIMARY KEY(staff_id)
+);
+
+-- Table Historic Staff
+DROP TABLE IF EXISTS historic_staff;
+CREATE TABLE historic_staff(
+staff_id INT NOT NULL AUTO_INCREMENT,
+staff_name VARCHAR(45),
+address VARCHAR(90),
+phone VARCHAR(45),
+hiring_date DATE,
+termination_date DATE,
 staff_role VARCHAR(45),
 PRIMARY KEY(staff_id)
 );
