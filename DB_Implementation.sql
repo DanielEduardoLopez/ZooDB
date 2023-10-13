@@ -26,11 +26,12 @@ PRIMARY KEY (species_id)
 -- Table Historic Species
 DROP TABLE IF EXISTS historic_species;
 CREATE TABLE historic_species(
-species_id INT NOT NULL AUTO_INCREMENT,
+hist_species_id INT NOT NULL AUTO_INCREMENT,
 common_name VARCHAR(45),
 scientific_name VARCHAR(45),
 general_description VARCHAR(100),
-PRIMARY KEY (species_id)
+termination_date DATE,
+PRIMARY KEY (hist_species_id)
 );
 
 -- Table Habitat
@@ -152,14 +153,14 @@ PRIMARY KEY(staff_id)
 -- Table Historic Staff
 DROP TABLE IF EXISTS historic_staff;
 CREATE TABLE historic_staff(
-staff_id INT NOT NULL AUTO_INCREMENT,
+hist_staff_id INT NOT NULL AUTO_INCREMENT,
 staff_name VARCHAR(45),
 address VARCHAR(90),
 phone VARCHAR(45),
 hiring_date DATE,
 termination_date DATE,
 staff_role VARCHAR(45),
-PRIMARY KEY(staff_id)
+PRIMARY KEY(hist_staff_id)
 );
 
 -- Table Guides
@@ -1123,3 +1124,25 @@ INNER JOIN route r
 ON i.itinerary_id = r.itinerary_id
 INNER JOIN zone z
 ON r.zone_id = z.zone_id;
+
+
+-- TRIGGERS
+-- Add to Historic Staff table before delete on Staff table
+DELIMITER //
+CREATE OR REPLACE TRIGGER before_delete_staff
+	BEFORE DELETE
+	ON staff FOR EACH ROW
+BEGIN
+	INSERT INTO historic_staff
+	VALUES (OLD.staff_id, OLD.staff_name, OLD.address, OLD.phone, OLD.hiring_date, CURDATE(), OLD.staff_role);
+END//
+
+-- Add to Historic Species table before delete on Species table
+DELIMITER //
+CREATE OR REPLACE TRIGGER before_delete_species
+	BEFORE DELETE
+	ON species FOR EACH ROW
+BEGIN
+	INSERT INTO historic_species
+	VALUES (OLD.species_id, OLD.common_name, OLD.scientific_name, OLD.general_description, CURDATE());
+END//
