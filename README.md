@@ -6,7 +6,7 @@
 **15/06/2023**
 
 ### **1. Project Description**
-Database design and implementation for a zoo in MySQL.
+Database design and implementation for a zoo in MySQL. This project is based on the final project for the Databases subject at UNAM (México).
 
 ### **2. Description of files in repository**
 File | Description 
