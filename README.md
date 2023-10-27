@@ -53,7 +53,11 @@ It is also required to know:
 	<img src="Schema.png?raw=true" width=80% height=80%>
 </p>
 
-### **5. Description of files in repository**
+### **5. Database Implementation**
+
+All the SQL code to implement the database can be seen <a href="https://raw.githubusercontent.com/DanielEduardoLopez/ZooDB/main/DB_Implementation.sql">here</a>.
+
+### **6. Description of files in repository**
 File | Description 
 --- | --- 
 DB_Data.sql | SQL script to add data to the zoo DB
