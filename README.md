@@ -30,7 +30,7 @@ Another requirements are:
 * Each caretaker receives an additional 20% of the proceeds from each itinerary that includes the area where the species in their care are found.
 * Each guide receives an additional 10% for each itinerary made.
 
-It is also required to know:
+It is also required to answers the following questions:
 * How many species are there in the zoo per area?
 * Number of visitors per specified date, per itinerary and the total amount obtained for each itinerary
 * Salary paid to each guide, showing the date, amount obtained per tour.
@@ -56,6 +56,8 @@ It is also required to know:
 ### **5. Database Implementation**
 
 All the SQL code to implement the database can be seen <a href="https://raw.githubusercontent.com/DanielEduardoLopez/ZooDB/main/DB_Implementation.sql">here</a>.
+
+Furthermore, the SQL code with some mock data to populate the database and answer the questions can be retrieved <a href="https://raw.githubusercontent.com/DanielEduardoLopez/ZooDB/main/DB_Data.sql">here</a>.
 
 ### **6. Description of files in repository**
 File | Description 
