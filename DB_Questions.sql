@@ -141,6 +141,16 @@ INNER JOIN zone z
 ON r.zone_id = z.zone_id;
 
 
+-- EXTRA QUESTIONS
+-- Window functions
+
+-- Average salary by role
+SELECT s.staff_name, s.staff_role, l.total_salary, 
+AVG(l.total_salary) OVER (PARTITION BY s.staff_role) AS Avg_Salary
+FROM staff s
+INNER JOIN salary l
+ON s.staff_id = l.staff_id
+WHERE l.salary_date = "2023-09-01";
 
 
 
