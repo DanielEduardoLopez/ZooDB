@@ -152,6 +152,18 @@ INNER JOIN salary l
 ON s.staff_id = l.staff_id
 WHERE l.salary_date = "2023-09-01";
 
+-- Rank salaries
+SELECT s.staff_name, s.staff_role, l.total_salary, 
+RANK() OVER (ORDER BY l.total_salary DESC) AS Rank_Salary
+FROM staff s
+INNER JOIN salary l
+ON s.staff_id = l.staff_id
+WHERE l.salary_date = "2023-09-01";
 
-
-
+-- Dense Rank salaries
+SELECT s.staff_name, s.staff_role, l.total_salary, 
+DENSE_RANK() OVER (ORDER BY l.total_salary DESC) AS Rank_Salary
+FROM staff s
+INNER JOIN salary l
+ON s.staff_id = l.staff_id
+WHERE l.salary_date = "2023-09-01";
