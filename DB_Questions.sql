@@ -181,3 +181,18 @@ ORDER BY s.staff_role, Rank_Salary;
 SELECT DISTINCT MONTH(influx_date) AS Month_Number,  influx_date,
 SUM(revenue) OVER(PARTITION BY MONTH(influx_date) ORDER BY influx_date) AS Revenue_Running_Total
 FROM influx;
+
+-- Number of rows by month
+SELECT DISTINCT influx_date,
+ROW_NUMBER() OVER(PARTITION BY MONTH(influx_date) ORDER BY influx_date) AS Revenue_Running_Total
+FROM influx;
+
+-- Revenue Quintiles
+SELECT DISTINCT influx_date, revenue,
+NTILE(5) OVER(ORDER BY revenue DESC) AS quintile
+FROM influx;
+
+-- Revenue Difference against Previous Month 
+SELECT DISTINCT influx_date, revenue,
+revenue - LAG(revenue, 1) OVER(PARTITION BY MONTH(influx_date) ORDER BY influx_date) AS Difference_Previous_Month
+FROM influx;
