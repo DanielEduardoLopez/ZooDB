@@ -184,7 +184,7 @@ FROM influx;
 
 -- Number of rows by month
 SELECT DISTINCT influx_date,
-ROW_NUMBER() OVER(PARTITION BY MONTH(influx_date) ORDER BY influx_date) AS Revenue_Running_Total
+ROW_NUMBER() OVER(PARTITION BY MONTH(influx_date) ORDER BY influx_date) AS Row_number_by_month
 FROM influx;
 
 -- Revenue Quintiles
@@ -196,3 +196,4 @@ FROM influx;
 SELECT DISTINCT influx_date, revenue,
 revenue - LAG(revenue, 1) OVER(PARTITION BY MONTH(influx_date) ORDER BY influx_date) AS Difference_Previous_Month
 FROM influx;
+
