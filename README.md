@@ -68,6 +68,6 @@ DB_Questions.sql | SQL answer queries to the requirements
 ER_Diagram.dia | ER diagram for the DB in the Chen notation created with DIA Diagram Editor
 ER_Diagram.png | ER diagram for the DB in the Chen notation
 Schema.mwb | Relational Diagram for the DB created with MySQL Workbench
-Schema.png | Relational Diagram for the DB
+Schema.png | Relational Diagram for the DB in PNG format
 Specifications.pdf | Document (in Spanish) with the requirements
 
