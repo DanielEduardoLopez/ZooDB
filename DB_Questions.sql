@@ -144,7 +144,7 @@ ON r.zone_id = z.zone_id;
 -- EXTRA QUESTIONS
 -- Window functions
 
--- Average salary by role
+-- 10. Salary by employee and average salary by role
 SELECT s.staff_name, s.staff_role, l.total_salary, 
 AVG(l.total_salary) OVER (PARTITION BY s.staff_role) AS Avg_Salary
 FROM staff s
@@ -152,7 +152,7 @@ INNER JOIN salary l
 ON s.staff_id = l.staff_id
 WHERE l.salary_date = "2023-09-01";
 
--- Rank salaries
+-- 11. Ranking of salaries by employee
 SELECT s.staff_name, s.staff_role, l.total_salary, 
 RANK() OVER (ORDER BY l.total_salary DESC) AS Rank_Salary
 FROM staff s
@@ -160,7 +160,7 @@ INNER JOIN salary l
 ON s.staff_id = l.staff_id
 WHERE l.salary_date = "2023-09-01";
 
--- Dense Rank salaries
+-- 12. Ranking of salaries by employee using the Dense_Rank function
 SELECT s.staff_name, s.staff_role, l.total_salary, 
 DENSE_RANK() OVER (ORDER BY l.total_salary DESC) AS Rank_Salary
 FROM staff s
@@ -168,7 +168,7 @@ INNER JOIN salary l
 ON s.staff_id = l.staff_id
 WHERE l.salary_date = "2023-09-01";
 
--- Dense Rank salaries by Role
+-- 13. Ranking of salaries by role using the Dense_Rank function
 SELECT s.staff_name, s.staff_role, l.total_salary, 
 DENSE_RANK() OVER (PARTITION BY s.staff_role ORDER BY l.total_salary DESC) AS Rank_Salary
 FROM staff s
@@ -177,23 +177,24 @@ ON s.staff_id = l.staff_id
 WHERE l.salary_date = "2023-09-01"
 ORDER BY s.staff_role, Rank_Salary;
 
--- Running total of revenue by month
+-- 14. Running total of revenue by day using a monthly window
 SELECT DISTINCT MONTH(influx_date) AS Month_Number,  influx_date,
 SUM(revenue) OVER(PARTITION BY MONTH(influx_date) ORDER BY influx_date) AS Revenue_Running_Total
 FROM influx;
 
--- Number of rows by month
+-- 15. Days and number of rows using a monthly window
 SELECT DISTINCT influx_date,
 ROW_NUMBER() OVER(PARTITION BY MONTH(influx_date) ORDER BY influx_date) AS Row_number_by_month
 FROM influx;
 
--- Revenue Quintiles
+-- 16. Quintiles of revenue by date
 SELECT DISTINCT influx_date, revenue,
 NTILE(5) OVER(ORDER BY revenue DESC) AS quintile
 FROM influx;
 
--- Revenue Difference against Previous Month 
-SELECT DISTINCT influx_date, revenue,
-revenue - LAG(revenue, 1) OVER(PARTITION BY MONTH(influx_date) ORDER BY influx_date) AS Difference_Previous_Month
-FROM influx;
+-- 17. Daily revenue difference using a monthly window
+SELECT DISTINCT influx_date, SUM(revenue),
+SUM(revenue) - LAG(SUM(revenue), 1) OVER(PARTITION BY MONTH(influx_date) ORDER BY influx_date) AS Daily_Revenue_Difference
+FROM influx
+GROUP BY influx_date;
 
