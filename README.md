@@ -40,6 +40,15 @@ It is also required to answers the following questions:
 * Visits made to each area per day (specific date)
 * Information on each species also showing the name of the keeper in charge, the list of cages and number of occupants, and the areas where they are located.
 * Information from each of the guides corresponding to the areas visited in each itinerary, how many people attended and on what date.
+* Salary by employee and average salary by role for the last payment date.
+* Ranking of salaries by employee for the last payment date.
+* Ranking of salaries by employee using the Dense_Rank function for the last payment date.
+* Ranking of salaries by role using the Dense_Rank function.
+* Running total of revenue by day using a monthly window.
+* Days and number of rows using a monthly window.
+* Quintiles of revenue by date.
+* Daily revenue difference using a monthly window.
+
 
 ### **3. ER Diagram**
 
