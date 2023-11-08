@@ -1125,6 +1125,19 @@ ON i.itinerary_id = r.itinerary_id
 INNER JOIN zone z
 ON r.zone_id = z.zone_id;
 
+-- 10. Last salary by employee and average salary by role
+DROP VIEW IF EXISTS last_salary_by_employee_and_role;
+CREATE VIEW last_salary_by_employee_and_role AS
+SELECT s.staff_name, s.staff_role, l.total_salary, 
+AVG(l.total_salary) OVER (PARTITION BY s.staff_role) AS Avg_Salary
+FROM staff s
+INNER JOIN salary l
+ON s.staff_id = l.staff_id
+WHERE l.salary_date = 
+(SELECT DISTINCT MAX(l.salary_date)
+FROM salary l);
+
+
 
 -- TRIGGERS
 -- Add to Historic Staff table before delete on Staff table
