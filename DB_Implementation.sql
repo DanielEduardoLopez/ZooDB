@@ -1137,6 +1137,17 @@ WHERE l.salary_date =
 (SELECT DISTINCT MAX(l.salary_date)
 FROM salary l);
 
+-- 11. Ranking of salaries by employee
+DROP VIEW IF EXISTS salary_ranking;
+CREATE VIEW salary_ranking AS
+SELECT s.staff_name, s.staff_role, l.total_salary, 
+RANK() OVER (ORDER BY l.total_salary DESC) AS Rank_Salary
+FROM staff s
+INNER JOIN salary l
+ON s.staff_id = l.staff_id
+WHERE l.salary_date = 
+(SELECT DISTINCT MAX(l.salary_date)
+FROM salary l);
 
 
 -- TRIGGERS
