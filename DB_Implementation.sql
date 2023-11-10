@@ -1149,7 +1149,7 @@ WHERE l.salary_date =
 (SELECT DISTINCT MAX(l.salary_date)
 FROM salary l);
 
--- 11. Dense Rank of salaries by employee
+-- 12. Dense Rank of salaries by employee
 DROP VIEW IF EXISTS dense_salary_ranking;
 CREATE VIEW dense_salary_ranking AS
 SELECT s.staff_name, s.staff_role, l.total_salary, 
@@ -1161,6 +1161,18 @@ WHERE l.salary_date =
 (SELECT DISTINCT MAX(l.salary_date)
 FROM salary l);
 
+-- 13. Ranking of salaries by role using the Dense_Rank function
+DROP VIEW IF EXISTS salary_ranking_by_role;
+CREATE VIEW salary_ranking_by_role AS
+SELECT s.staff_name, s.staff_role, l.total_salary, 
+DENSE_RANK() OVER (PARTITION BY s.staff_role ORDER BY l.total_salary DESC) AS Rank_Salary
+FROM staff s
+INNER JOIN salary l
+ON s.staff_id = l.staff_id
+WHERE l.salary_date = 
+(SELECT DISTINCT MAX(l.salary_date)
+FROM salary l)
+ORDER BY s.staff_role, Rank_Salary;
 
 
 -- TRIGGERS
