@@ -1174,6 +1174,13 @@ WHERE l.salary_date =
 FROM salary l)
 ORDER BY s.staff_role, Rank_Salary;
 
+-- 14. Running total of revenue by day using a monthly window
+DROP VIEW IF EXISTS revenue_running_total_by_month;
+CREATE VIEW revenue_running_total_by_month AS
+SELECT DISTINCT MONTHNAME(STR_TO_DATE(MONTH(influx_date), '%m')) AS 'Month',  influx_date AS 'Date',
+SUM(revenue) OVER(PARTITION BY MONTH(influx_date) ORDER BY influx_date) AS Revenue_Running_Total
+FROM influx;
+
 
 -- TRIGGERS
 -- Add to Historic Staff table before delete on Staff table
@@ -1194,4 +1201,3 @@ CREATE OR REPLACE TRIGGER before_delete_species
 BEGIN
 	INSERT INTO historic_species
 	VALUES (OLD.species_id, OLD.common_name, OLD.scientific_name, OLD.general_description, CURDATE());
-END//
