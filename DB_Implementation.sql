@@ -1181,6 +1181,12 @@ SELECT DISTINCT MONTHNAME(STR_TO_DATE(MONTH(influx_date), '%m')) AS 'Month',  in
 SUM(revenue) OVER(PARTITION BY MONTH(influx_date) ORDER BY influx_date) AS Revenue_Running_Total
 FROM influx;
 
+-- 15. Days and number of rows using a monthly window
+DROP VIEW IF EXISTS row_number_by_month;
+CREATE VIEW row_number_by_month AS
+SELECT DISTINCT influx_date,
+ROW_NUMBER() OVER(PARTITION BY MONTH(influx_date) ORDER BY influx_date) AS Row_number_by_month
+FROM influx;
 
 -- TRIGGERS
 -- Add to Historic Staff table before delete on Staff table
