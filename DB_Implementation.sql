@@ -1188,6 +1188,14 @@ SELECT DISTINCT influx_date,
 ROW_NUMBER() OVER(PARTITION BY MONTH(influx_date) ORDER BY influx_date) AS Row_number_by_month
 FROM influx;
 
+-- 16. Quintiles of revenue by month
+DROP VIEW IF EXISTS revenue_quintiles_by_month;
+CREATE VIEW revenue_quintiles_by_month AS
+SELECT DISTINCT influx_date, revenue,
+NTILE(5) OVER(PARTITION BY MONTH(influx_date) ORDER BY revenue DESC) AS quintile
+FROM influx;
+
+
 -- TRIGGERS
 -- Add to Historic Staff table before delete on Staff table
 DELIMITER //
