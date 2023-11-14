@@ -1195,6 +1195,13 @@ SELECT DISTINCT influx_date, revenue,
 NTILE(5) OVER(PARTITION BY MONTH(influx_date) ORDER BY revenue DESC) AS quintile
 FROM influx;
 
+-- 17. Daily revenue difference using a monthly window
+DROP VIEW IF EXISTS daily_revenue_difference_by_month;
+CREATE VIEW daily_revenue_difference_by_month AS
+SELECT DISTINCT influx_date, SUM(revenue),
+SUM(revenue) - LAG(SUM(revenue), 1) OVER(PARTITION BY MONTH(influx_date) ORDER BY influx_date) AS Daily_Revenue_Difference
+FROM influx
+GROUP BY influx_date;
 
 -- TRIGGERS
 -- Add to Historic Staff table before delete on Staff table
